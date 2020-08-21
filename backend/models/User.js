@@ -20,7 +20,7 @@ userSchema.statics.findByUserName = function (userName) {
 
 
 userSchema.methods.setPassWord = async function (passWord) {
-    this.passWord = await bcrypt.hash(password, 1024)
+    this.passWord = await bcrypt.hash(passWord, 1024)
     return this
 }
 

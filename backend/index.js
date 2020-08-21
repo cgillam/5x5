@@ -23,7 +23,8 @@ app.use(morgan("common"))
 app.use(express.static(CONSTANCE.FRONTEND_STATIC))
 
 app.use(cookieParser(SECRET))
-app.use(express.urlencoded({ extended: true }))
+//app.use(express.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(multer().none())
 app.use(session({
