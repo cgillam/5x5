@@ -26,8 +26,12 @@ module.exports = mongoose.model('Workout', new mongoose.Schema({
     weights: {
         type: [Number],
         required: true,
-        //validate: [weights => weights.length, 'must have at least one weight']
     },
+    comments: {
+        type: [String],
+        required: true,
+    },
+
 }, {
     timestamps: { createdAt: true, updatedAt: false }
 }));

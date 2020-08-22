@@ -85,15 +85,20 @@ exports.next = async (req, res) => {
 
 
 exports.submit = async (req, res) => {
-    const { exerciseIDs, weights } = req.body;
+    const { exerciseIDs, weights, comments } = req.body;
 
-    await new Workout({ user: req.user, exercises: exerciseIDs, weights }).save()
+    await new Workout({ user: req.user, exercises: exerciseIDs, weights, comments }).save()
 
     return res.status(200).end();
 }
 
 exports.history = async (req, res) => {
-    const workouts = await Workout.find({ user: req.user });
+    const workouts = (await Workout.find({ user: req.user })).map(workout => workout.toJSON());
 
-    return res.json({ workouts: workouts.map(workout => workout.toJSON()) });
+
+    workouts.forEach((workout) => {
+        workout.exercises = workout.exercises.map((exerciseID) => exercises.flat().find((exercise) => exercise._id === exerciseID))
+    })
+    console.log(workouts)
+    return res.json({ workouts });
 }

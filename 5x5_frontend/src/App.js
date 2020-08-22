@@ -4,11 +4,13 @@ import Tracker from './Tracker.js'
 import './App.css';
 import User from './user.js';
 import Authenticate from './authenticate.js'
+import HistoryTable from './HistoryTable.js'
 
 function App() {
+  const [tab, setTab] = useState('history');
+
   const [user, setUser] = useState({});
   const [exercises, setExercises] = useState([]);
-  console.log(exercises)
 
   useEffect(() => {
     fetch('/api/user/current')
@@ -27,11 +29,22 @@ function App() {
       });
   }, [user]);
 
+  const content = tab === 'home'
+    ? <Tracker exercises={exercises} />
+    : <HistoryTable />;
+
   return (
     <div className="App">
       <User.Provider value={{ ...user, setUser }} >
-        <Tracker exercises={exercises} />
+        <ul style={{ listStyle: 'none' }}>
+          <li><button onClick={() => setTab('home')}>Home</button></li>
+          <li><button onClick={() => setTab('history')}>History</button></li>
+        </ul>
         <Authenticate />
+        {!user._id
+          ? <p>User must log in to use app</p>
+          : content
+        }
       </User.Provider>
     </div>
   );

@@ -8,10 +8,22 @@ export default function Lift({ stage, nextLift }) {
     if (set !== 2) {
         content = <Set number={set} nextSet={() => setSet(set + 1)} />
     } else {
-        content = <button onClick={() => {
-            setSet(0);
-            nextLift();
-        }}>Continue to next exercise</button>
+        content = (
+            <React.Fragment>
+
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+
+                    const comment = e.target.elements["comment"].value.trim();
+
+                    setSet(0);
+                    nextLift(comment);
+                }}>
+                    <textarea name="comment" placeholder="Comment" ></textarea>
+                    <button>Continue to next exercise</button>
+                </form>
+            </React.Fragment>
+        )
     }
     return (
         <React.Fragment>

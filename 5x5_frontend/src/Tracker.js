@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Lift from './Lift.js';
 import Exercise from './exercise.js';
+import { Delay } from './helper.js';
 
 const DEFAULT_WEIGHT = 145;
 
 export default function Tracker({ exercises }) {
+
+    const [animating, setAnimating] = useState(2);
     const [exerciseIndex, setExerciseIndex] = useState(0);
     const exercise = exercises[exerciseIndex];
 
     const [weights, setWeights] = useState([]);
+    const [comments, setComments] = useState([]);
 
     const [formWeight, setFormWeight] = useState(DEFAULT_WEIGHT);
     const [weight, setWeight] = useState();
@@ -26,7 +30,8 @@ export default function Tracker({ exercises }) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 exerciseIDs: exercises.map(exercise => exercise._id),
-                weights
+                weights,
+                comments
             })
         }).then(console.log);
     }, [exercise]);
@@ -34,14 +39,20 @@ export default function Tracker({ exercises }) {
     if (!exercise) return <h1>All exercises completed</h1>
 
     const content = (weight
-        ? <React.Fragment>
-            <button onClick={() => setWeight(undefined)}>{weight}</button>
-            <Lift nextLift={() => {
+        ? <div>
+            <Lift nextLift={async (comment) => {
+                setAnimating(3);
+                await Delay(1000);
+                setAnimating(1);
+                await Delay(1000);
+                setAnimating(2);
+
                 setExerciseIndex(exerciseIndex + 1);
                 setWeight(undefined);
                 setWeights([...weights, weight]);
+                setComments([...comments, comment]);
             }} />
-        </React.Fragment>
+        </div>
         : <form onSubmit={(e) => {
             e.preventDefault()
             setWeight(formWeight);
@@ -54,11 +65,14 @@ export default function Tracker({ exercises }) {
     )
 
     return (
-        <React.Fragment>
+        <div className={
+            "tracker " +
+            (animating === 2 ? '' : animating === 1 ? "entering" : "leaving")
+        }>
             <Exercise.Provider value={exercise}>
                 <h2>{exercise.title}</h2>
                 {content}
             </Exercise.Provider>
-        </React.Fragment>
+        </div>
     )
 }
