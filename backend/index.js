@@ -48,7 +48,8 @@ app.get("*", (req, res) => {
 app.listen(PORT, () => {
     console.log(`listening http://localhost:${PORT}`)
     connectToDataBase().then(
-        () => console.log("database establishe"),
+
+        () => console.log("database establishe")/* || require('mongoose').connection.dropCollection('workoutplans')*/,
         (...errs) => console.error('database error', ...errs)
     )
 })

@@ -5,7 +5,7 @@ import { Delay } from './helper.js';
 
 const DEFAULT_WEIGHT = 145;
 
-export default function Tracker({ exercises }) {
+export default function Tracker({ planId, exercises }) {
 
     const [animating, setAnimating] = useState(2);
     const [exerciseIndex, setExerciseIndex] = useState(0);
@@ -29,6 +29,7 @@ export default function Tracker({ exercises }) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                planid: planId,
                 exerciseIDs: exercises.map(exercise => exercise._id),
                 weights,
                 comments
@@ -47,10 +48,10 @@ export default function Tracker({ exercises }) {
                 await Delay(1000);
                 setAnimating(2);
 
-                setExerciseIndex(exerciseIndex + 1);
-                setWeight(undefined);
                 setWeights([...weights, weight]);
                 setComments([...comments, comment]);
+                setExerciseIndex(exerciseIndex + 1);
+                setWeight(undefined);
             }} />
         </div>
         : <form onSubmit={(e) => {

@@ -7,20 +7,13 @@ module.exports = mongoose.model('Workout', new mongoose.Schema({
         ref: 'User',
         required: true
     },
+
     exercises: {
-        /*
         type: [{
             type: mongoose.Types.ObjectId,
             ref: 'Exercise'
-        }],*/
-        type: [{
-            type: String,
         }],
-        required: true,
-        /*validate: [exercises => {
-            console.log(exercises);
-            return exercises.length
-        }, 'must have at least one exercise']*/
+        required: true
 
     },
     weights: {
@@ -31,7 +24,11 @@ module.exports = mongoose.model('Workout', new mongoose.Schema({
         type: [String],
         required: true,
     },
-
+    plan: {
+        type: mongoose.Types.ObjectId,
+        ref: 'WorkoutPlan',
+        required: true
+    },
 }, {
     timestamps: { createdAt: true, updatedAt: false }
 }));

@@ -5,12 +5,15 @@ import './App.css';
 import User from './user.js';
 import Authenticate from './authenticate.js'
 import HistoryTable from './HistoryTable.js'
+import Plans from './Plans.js'
 
 function App() {
-  const [tab, setTab] = useState('history');
+  const [tab, setTab] = useState('home');
 
   const [user, setUser] = useState({});
   const [exercises, setExercises] = useState([]);
+  const [planID, setPlanID] = useState(null)
+  const [plans, setPlans] = useState([])
 
   useEffect(() => {
     fetch('/api/user/current')
@@ -18,19 +21,28 @@ function App() {
       .then(newUser => {
         setUser(newUser);
       })
+    fetch('/api/plans/list')
+      .then(r => console.log(r) || r.json())
+      .then(({ plans }) => {
+        setPlans(plans);
+      })
   }, []);
 
   useEffect(() => {
-    fetch('/api/workout/next')
+    fetch('/api/workout/next?planId=' + (planID || ''))
       .then(r => console.log(r) || r.json())
-      .then(({ exercises, weights }) => {
+      .then(({ planId, exercises, weights }) => {
         exercises.forEach((exercise, i) => exercise.weight = weights[i]);
+        if (planId) setPlanID(planId) || console.log('set from', planID, 'to', planId)
         setExercises(exercises);
       });
-  }, [user]);
+  }, [user, planID]);
 
   const content = tab === 'home'
-    ? <Tracker exercises={exercises} />
+    ? <React.Fragment>
+      <Tracker planId={planID} exercises={exercises} />
+      <Plans plans={plans} setPlans={setPlans} planID={planID} setPlanID={(id) => console.log('pid to', id) || setPlanID(id)} />
+    </React.Fragment>
     : <HistoryTable />;
 
   return (
