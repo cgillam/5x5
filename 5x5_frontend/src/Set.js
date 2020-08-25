@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext, useRef } from "react"
 import Rep from './Rep.js'
 import Exercise from './exercise.js';
 
-//const DELAY = 180000;
-const DELAY = 3000;
+const DELAY = 180000;
+//const DELAY = 3000;
 // TODO - debug
 
 export default function Set({ stage: exercise, number, nextSet }) {
@@ -12,8 +12,12 @@ export default function Set({ stage: exercise, number, nextSet }) {
 
     const [rep, setRep] = useState(0);
     const [remaining, setRemaining] = useState(0);
+    const [mainEnding, setMainEnding] = useState(0);
+
     const [stageRemaining, setStageRemaining] = useState(0);
-    const [barPercentage, setBarPercentage] = useState(0);
+    const [stageEnding, setStageEnding] = useState(0);
+
+
     const breething = remaining > buffer && remaining < DELAY - buffer;
 
     const [first, setFirst] = useState(true);
@@ -24,12 +28,13 @@ export default function Set({ stage: exercise, number, nextSet }) {
     const intervalRef = useRef();
 
     useEffect(() => {
-        setStageRemaining(breething ? 4000 : 0);
+        const duration = breething ? 4000 : 0
+        setStageEnding(Date.now() + duration);
+        setStageRemaining(duration);
     }, [breething])
 
     const stopBar = () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
-        setBarPercentage(0);
     }
 
     useEffect(() => {
@@ -38,46 +43,38 @@ export default function Set({ stage: exercise, number, nextSet }) {
             if (first) setFirst(false);
             setStage(stage => {
                 const newStage = (stage + 1) % 4;
+                setStageEnding(Date.now() + 4000);
                 setStageRemaining(4000);
 
                 return newStage;
             });
             return;
         }
+    }, [stage, stageFinished, remaining, breething]);
+
+    useEffect(() => {
         if (intervalRef.current) clearInterval(intervalRef.current);
         intervalRef.current = setInterval(() => {
-            setStageRemaining(stageRemaining => {
-                const newremain = Math.max(0, stageRemaining - 10);
-                if (stage % 2 === 0) {
-                    const inward = stage === 0;
-                    const subnum = inward ? newremain : (4000 - newremain) % 4000;
-                    setBarPercentage(100 - (subnum / 4000 * 100));
-
-                }
-                else {
-                    const inward = stage === 1;
-                    setBarPercentage(inward ? 100 : 0);
-                }
-                return newremain;
-            });
-        }, 10);
-
-        //return stopBar;
-    }, [stage, stageFinished, remaining, breething]);
+            setStageRemaining(Math.max(0, stageEnding - Date.now()));
+        }, 100);
+        return () => clearInterval(intervalRef.current);
+    }, [stageEnding]);
 
     useEffect(() => {
         if (rep !== 6 && rep !== 0) return;
 
-        setRemaining(rep === 0 ? buffer : DELAY);
+        const duration = rep === 0 ? buffer : DELAY
+        setMainEnding(Date.now() + duration);
+        setRemaining(duration);
+    }, [rep]);
+
+    useEffect(() => {
         const interval = setInterval(() => {
-            setRemaining(remaining => {
-                return Math.max(0, remaining - 100);
-            });
+            setRemaining(remaining => Math.max(0, mainEnding - Date.now()));
         }, 100);
 
         return () => clearInterval(interval);
-    }, [rep]);
-
+    }, [mainEnding])
 
     useEffect(() => {
         if (!first && !remaining) {
@@ -105,7 +102,7 @@ export default function Set({ stage: exercise, number, nextSet }) {
         <div>
             {number ? <p> Set #{number} </p> : null}
             {content}
-            <div id="bar" style={{ height: barPercentage + '%' }}></div>
+            <div id="bar" className={breething ? 'breething' : ''} style={{ animationDuration: (4000 * 4) + 'ms' }}></div>
         </div>
     )
 

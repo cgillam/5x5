@@ -6,6 +6,18 @@ import User from './user.js';
 import Authenticate from './authenticate.js'
 import HistoryTable from './HistoryTable.js'
 import Plans from './Plans.js'
+import { Tab } from '@material-ui/core'
+import { TabContext, TabList, TabPanel } from '@material-ui/lab'
+
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#FF0000',
+    }
+  },
+});
 
 function App() {
   const [tab, setTab] = useState('home');
@@ -38,27 +50,32 @@ function App() {
       });
   }, [user, planID]);
 
-  const content = tab === 'home'
-    ? <React.Fragment>
-      <Tracker planId={planID} exercises={exercises} />
-      <Plans plans={plans} setPlans={setPlans} planID={planID} setPlanID={(id) => console.log('pid to', id) || setPlanID(id)} />
-    </React.Fragment>
-    : <HistoryTable />;
-
   return (
-    <div className="App">
+    <ThemeProvider theme={theme}>
       <User.Provider value={{ ...user, setUser }} >
-        <ul style={{ listStyle: 'none' }}>
-          <li><button onClick={() => setTab('home')}>Home</button></li>
-          <li><button onClick={() => setTab('history')}>History</button></li>
-        </ul>
-        <Authenticate />
-        {!user._id
-          ? <p>User must log in to use app</p>
-          : content
-        }
+        <TabContext value={tab}>
+          <TabList onChange={(_, newTab) => setTab(newTab)} centered variant="fullWidth">
+            <Tab label="Home" value="home" />
+            <Tab label="History" value="history" />
+          </TabList>
+
+          <Authenticate />
+
+          {!user._id
+            ? null
+            : <React.Fragment>
+              <TabPanel value="home">
+                <Tracker planId={planID} exercises={exercises} />
+                <Plans plans={plans} setPlans={setPlans} planID={planID} setPlanID={(id) => console.log('pid to', id) || setPlanID(id)} />
+              </TabPanel>
+              <TabPanel value="history">
+                <HistoryTable />
+              </TabPanel>
+            </React.Fragment>
+          }
+        </TabContext>
       </User.Provider>
-    </div>
+    </ThemeProvider>
   );
 }
 

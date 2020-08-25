@@ -1,3 +1,7 @@
+body, html {
+  background-color: grey;
+}
+
 .tracker{
   position: relative;
   background-color: red;
@@ -28,5 +32,46 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 50%;
+  height: 00%;
+}
+
+#bar.breething {
+  animation-name: breething;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes breething {
+  0% {
+    height: 0%;
+  }
+  25% {
+    height: 100%;
+  }
+  50% {
+    height: 100%;
+  }
+  75% {
+    height: 0%;
+  }
+  100% {
+    height: 0%;
+  }
+}
+
+.left-label {
+  justify-content: left !important;
+}
+
+.MuiTextField-root.white-input > label {
+  color: white !important;
+}
+
+.MuiPaper-root.black-paper {
+  background-color: black;
+  color: white;
+}
+.MuiTableCell-root.black-paper {
+  background-color: black;
+  color: white;
 }

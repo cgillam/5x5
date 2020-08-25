@@ -49,7 +49,14 @@ app.listen(PORT, () => {
     console.log(`listening http://localhost:${PORT}`)
     connectToDataBase().then(
 
-        () => console.log("database establishe")/* || require('mongoose').connection.dropCollection('workoutplans')*/,
+        async () => {
+            console.log("database establishe");
+            /*
+            const conn = require('mongoose').connection
+            await conn.dropCollection('workouts')
+            await conn.dropCollection('workoutplans')
+            */
+        },
         (...errs) => console.error('database error', ...errs)
     )
 })
