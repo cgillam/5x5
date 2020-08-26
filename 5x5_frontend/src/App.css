@@ -6,36 +6,66 @@ body, html {
   position: relative;
   background-color: red;
 
-
-  transition: all 1s;
-  transform: translateX(0%);
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.tracker.entering{
-  transform: translateX(-110%);
-}
 
 
 @keyframes leave {
   0%   { transform: translateX(0%); }
-  100% { transform: translateX(110%);  }
+  100% { transform: translateX(250%);  }
 }
-  .tracker.leaving{
-    background-color: grey;
-    animation: leave 1s forwards;
-  }
 
-#bar {
+.MuiDialog-paperScrollBody.exercise-modal{
+  height: 50vh;
+  box-shadow: 0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1);
+  border-radius: 1em;
+  transition: all 1s;
+  transform: translateX(0%);
+}
+.MuiDialog-paperScrollBody.exercise-modal * {
+  z-index: 10;
+}
+.MuiDialog-paperScrollBody.exercise-modal.leaving{
+  background-color: grey;
+  animation: leave 1.5s forwards;
+}
+
+.MuiDialog-paperScrollBody.exercise-modal.entering{
+  transform: translateX(-250%);
+}
+#set-bar {
+  position: absolute;
+  background-color: darkred;
+  z-index: -1;
+  left: 0;
+  bottom: 0;
+  width: 1em;
+  height: 0%;
+}
+#rep-bar {
+  position: absolute;
+  background-color: darkred;
+  z-index: -1;
+  right: 0;
+  bottom: 0;
+  width: 1em;
+  height: 0%;
+}
+#breathing-bar {
   position: absolute;
   background-color: blue;
   z-index: -1;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 00%;
+  height: 0%;
 }
 
-#bar.breething {
+#breathing-bar.breething {
   animation-name: breething;
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
@@ -63,7 +93,7 @@ body, html {
   justify-content: left !important;
 }
 
-.MuiTextField-root.white-input > label {
+.MuiTextField-root.white-input > label, .MuiTextField-root.white-input input {
   color: white !important;
 }
 
@@ -74,4 +104,10 @@ body, html {
 .MuiTableCell-root.black-paper {
   background-color: black;
   color: white;
+}
+
+.MuiDialog-paperScrollBody.grey-modal {
+  background-color: darkgrey;
+  box-shadow: 0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1);
+  border-radius: 1em;
 }

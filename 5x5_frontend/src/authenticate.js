@@ -47,7 +47,7 @@ export default function Authenticate() {
                     <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Username" name="userName" />
                     <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" type="password" label="Password" name="password" />
                     <Button variant="outlined" color="primary" style={{ color: 'white' }} classes={{ label: 'left-label' }} type="submit" name="action" value="login">Login</Button>
-                    <Button variant="outlined" color="primary" style={{ color: 'white' }} classes={{ label: 'left-label' }} type="submit" name="action" value="signup">Sign Up</Button>
+                    <Button variant="outlined" color="primary" style={{ color: 'white' }} classes={{ label: 'left-label' }} name="action" value="signup">Sign Up</Button>
                 </form >
             </Paper>
         </Grid >

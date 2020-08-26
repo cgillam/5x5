@@ -28,7 +28,8 @@ exports.next = async (req, res) => {
         ...(planId ? { plan: planId } : {})
     }).sort({ createdAt: -1, });
 
-    if (weekWorkouts.length >= 3) return res.json(emptyNext);
+    // todo - debug
+    if (weekWorkouts.length >= 300) return res.json(emptyNext);
 
     const currentDay = new Date().getDate();
     const todayWorkout = weekWorkouts.find(workout => workout.createdAt.getDate() === currentDay);

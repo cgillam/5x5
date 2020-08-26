@@ -2,9 +2,11 @@ import React, { useState, useEffect, useContext, useRef } from "react"
 import Rep from './Rep.js'
 import Exercise from './exercise.js';
 
-const DELAY = 180000;
-//const DELAY = 3000;
+//const DELAY = 180000;
+const DELAY = 8000;
 // TODO - debug
+
+const REP_TOTAL = 5;
 
 export default function Set({ stage: exercise, number, nextSet }) {
     //const { buffer } = useContext(Exercise);
@@ -61,7 +63,7 @@ export default function Set({ stage: exercise, number, nextSet }) {
     }, [stageEnding]);
 
     useEffect(() => {
-        if (rep !== 6 && rep !== 0) return;
+        if (rep !== REP_TOTAL - 1 && rep !== 0) return;
 
         const duration = rep === 0 ? buffer : DELAY
         setMainEnding(Date.now() + duration);
@@ -88,13 +90,13 @@ export default function Set({ stage: exercise, number, nextSet }) {
     }, []);
 
     let content;
-    if (rep > 0 && rep < 6) {
+    if (rep > 0 && rep < REP_TOTAL + 1) {
         content = <Rep stage={exercise} number={rep - 1} nextRep={() => setRep(rep + 1)} />
     } else {
         content = (
             <div>
                 {breething ? <p>{stageText}</p> : null}
-                <p>{!breething ? 'Prepare' : ''} {remaining / 1000}s...</p>
+                {!breething ? <p>Prepare...</p> : null}
             </div>
         )
     }
@@ -102,7 +104,8 @@ export default function Set({ stage: exercise, number, nextSet }) {
         <div>
             {number ? <p> Set #{number} </p> : null}
             {content}
-            <div id="bar" className={breething ? 'breething' : ''} style={{ animationDuration: (4000 * 4) + 'ms' }}></div>
+            <div id="breathing-bar" className={breething ? 'breething' : ''} style={{ animationDuration: (4000 * 4) + 'ms' }}></div>
+            <div id="rep-bar" style={{ height: (rep / REP_TOTAL * 100) + '%' }}></div>
         </div>
     )
 

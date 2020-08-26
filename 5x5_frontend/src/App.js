@@ -56,6 +56,7 @@ function App() {
         <TabContext value={tab}>
           <TabList onChange={(_, newTab) => setTab(newTab)} centered variant="fullWidth">
             <Tab label="Home" value="home" />
+            <Tab label="Accessory Workout Plan" value="plans" />
             <Tab label="History" value="history" />
           </TabList>
 
@@ -66,6 +67,8 @@ function App() {
             : <React.Fragment>
               <TabPanel value="home">
                 <Tracker planId={planID} exercises={exercises} />
+              </TabPanel>
+              <TabPanel value="plans">
                 <Plans plans={plans} setPlans={setPlans} planID={planID} setPlanID={(id) => console.log('pid to', id) || setPlanID(id)} />
               </TabPanel>
               <TabPanel value="history">
