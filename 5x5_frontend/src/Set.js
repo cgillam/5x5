@@ -2,9 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from "react"
 import Rep from './Rep.js'
 import Exercise from './exercise.js';
 
-//const DELAY = 180000;
-const DELAY = 8000;
-// TODO - debug
+const DELAY = 180000;
 
 const REP_TOTAL = 5;
 

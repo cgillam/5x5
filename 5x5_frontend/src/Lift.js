@@ -3,7 +3,7 @@ import Set from "./Set.js"
 import { Button, TextareaAutosize, Paper } from '@material-ui/core'
 import Exercise from './exercise.js';
 
-const SET_TOTAL = 2
+const SET_TOTAL = 5
 
 export default function Lift({ stage, nextLift }) {
     const { stages } = useContext(Exercise);
@@ -43,7 +43,7 @@ export default function Lift({ stage, nextLift }) {
             </React.Fragment>
         )
     }
-    const totalLength = (8000 + stages.reduce((ttl, stage) => ttl + stage.duration, 0) * 5) * SET_TOTAL;
+    const totalLength = (180000 + stages.reduce((ttl, stage) => ttl + stage.duration, 0) * 5) * SET_TOTAL;
     return (
         <React.Fragment>
             {content}
