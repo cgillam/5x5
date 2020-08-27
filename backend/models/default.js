@@ -1,30 +1,32 @@
 const WorkoutPlan = require("./workouPlan.js");
 const Exercise = require('./Exercise')
 
+// heroku scale web=0
+
 const DefaultExersiserPlan = {
     exerciseSlots: [
         [
             {
                 title: 'Squat',
-                buffer: 3000,
-                stages: [{ action: 'Squat', duration: 400 }, { action: 'Raise', duration: 200 }, { action: 'Reset', duration: 400 }],
+                buffer: 30000,
+                stages: [{ action: 'Squat', duration: 4000 }, { action: 'Raise', duration: 2000 }, { action: 'Reset', duration: 4000 }],
             }
         ], [{
             title: 'Bench',
-            buffer: 3000,
-            stages: [{ action: 'Lower', duration: 400 }, { action: 'Pause', duration: 200 }, { action: 'Raise', duration: 400 }],
+            buffer: 30000,
+            stages: [{ action: 'Lower', duration: 4000 }, { action: 'Pause', duration: 2000 }, { action: 'Raise', duration: 4000 }],
         }, {
             title: 'Press',
-            buffer: 3000,
-            stages: [{ action: 'Lower', duration: 400 }, { action: 'Pause', duration: 200 }, { action: 'Raise', duration: 400 }],
+            buffer: 30000,
+            stages: [{ action: 'Lower', duration: 4000 }, { action: 'Pause', duration: 2000 }, { action: 'Raise', duration: 4000 }],
         }], [{
             title: 'Row',
-            buffer: 3000,
-            stages: [{ action: 'Raise', duration: 400 }, { action: 'Lower', duration: 200 }, { action: 'Reset', duration: 400 }],
+            buffer: 30000,
+            stages: [{ action: 'Raise', duration: 4000 }, { action: 'Lower', duration: 2000 }, { action: 'Reset', duration: 4000 }],
         }, {
             title: 'Deadlift',
-            buffer: 3000,
-            stages: [{ action: 'Raise', duration: 400 }, { action: 'Lower', duration: 200 }, { action: 'Reset', duration: 400 }],
+            buffer: 30000,
+            stages: [{ action: 'Raise', duration: 4000 }, { action: 'Lower', duration: 200 }, { action: 'Reset', duration: 4000 }],
         }]
     ]
 };
