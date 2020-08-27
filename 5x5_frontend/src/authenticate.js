@@ -4,6 +4,8 @@ import { Button, TextField, Paper, Box, Grid } from '@material-ui/core'
 
 export default function Authenticate() {
     const user = useContext(UserContext)
+
+    const formRef = useRef(null)
     if (user._id) return (
         <Button
             onClick={() => {
@@ -21,7 +23,6 @@ export default function Authenticate() {
         >Log Out</Button>
     );
 
-    const formRef = useRef(null)
     const submitForm = (login) => {
         const data = new FormData(formRef.current);
         fetch(`/api/user/${login ? "login" : "signup"}`, {
