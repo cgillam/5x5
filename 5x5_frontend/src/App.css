@@ -39,7 +39,7 @@ body, html {
 }
 #set-bar {
   position: absolute;
-  background-color: darkred;
+  background-color: grey;
   z-index: -1;
   left: 0;
   bottom: 0;
@@ -48,13 +48,23 @@ body, html {
 }
 #rep-bar {
   position: absolute;
-  background-color: darkred;
-  z-index: -1;
+  background-color: grey;
+  z-index: -2;
   right: 0;
   bottom: 0;
   width: 1em;
   height: 0%;
 }
+
+@keyframes fill {
+  0% {
+    height: 0%;
+  }
+  100% {
+    height: 100%
+  }
+}
+
 #breathing-bar {
   position: absolute;
   background-color: blue;
@@ -66,6 +76,22 @@ body, html {
 }
 
 #breathing-bar.breething {
+  animation-name: breething;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+#exercise-bar {
+  position: absolute;
+  background-color: grey;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0%;
+}
+
+#exercise-bar.breething {
   animation-name: breething;
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;

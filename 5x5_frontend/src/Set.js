@@ -8,9 +8,8 @@ const DELAY = 8000;
 
 const REP_TOTAL = 5;
 
-export default function Set({ stage: exercise, number, nextSet }) {
-    //const { buffer } = useContext(Exercise);
-    const buffer = 1000;
+export default function Set({ number, nextSet }) {
+    const { buffer, stages } = useContext(Exercise);
 
     const [rep, setRep] = useState(0);
     const [remaining, setRemaining] = useState(0);
@@ -63,7 +62,7 @@ export default function Set({ stage: exercise, number, nextSet }) {
     }, [stageEnding]);
 
     useEffect(() => {
-        if (rep !== REP_TOTAL - 1 && rep !== 0) return;
+        if (rep !== REP_TOTAL + 1 && rep !== 0) return;
 
         const duration = rep === 0 ? buffer : DELAY
         setMainEnding(Date.now() + duration);
@@ -89,14 +88,17 @@ export default function Set({ stage: exercise, number, nextSet }) {
         setFirst(false);
     }, []);
 
+    let animating;
     let content;
     if (rep > 0 && rep < REP_TOTAL + 1) {
-        content = <Rep stage={exercise} number={rep - 1} nextRep={() => setRep(rep + 1)} />
+        animating = true;
+        content = <Rep number={rep - 1} nextRep={() => setRep(rep + 1)} />
     } else {
+        animating = false;
         content = (
             <div>
                 {breething ? <p>{stageText}</p> : null}
-                {!breething ? <p>Prepare...</p> : null}
+                {!breething ? remaining <= buffer ? <p>Prepare</p> : <p>Reset the bar</p> : null}
             </div>
         )
     }
@@ -105,7 +107,6 @@ export default function Set({ stage: exercise, number, nextSet }) {
             {number ? <p> Set #{number} </p> : null}
             {content}
             <div id="breathing-bar" className={breething ? 'breething' : ''} style={{ animationDuration: (4000 * 4) + 'ms' }}></div>
-            <div id="rep-bar" style={{ height: (rep / REP_TOTAL * 100) + '%' }}></div>
         </div>
     )
 

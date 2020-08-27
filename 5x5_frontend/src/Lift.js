@@ -1,16 +1,21 @@
 import React, { useState, useContext } from "react"
 import Set from "./Set.js"
 import { Button, TextareaAutosize, Paper } from '@material-ui/core'
+import Exercise from './exercise.js';
 
 const SET_TOTAL = 2
 
 export default function Lift({ stage, nextLift }) {
+    const { stages } = useContext(Exercise);
     const [set, setSet] = useState(0);
 
+    let animating;
     let content;
     if (set !== SET_TOTAL + 1) {
+        animating = true;
         content = <Set number={set} nextSet={() => setSet(set + 1)} />
     } else {
+        animating = false;
         content = (
             <React.Fragment>
                 <form onSubmit={(e) => {
@@ -38,10 +43,17 @@ export default function Lift({ stage, nextLift }) {
             </React.Fragment>
         )
     }
+    const totalLength = (8000 + stages.reduce((ttl, stage) => ttl + stage.duration, 0) * 5) * SET_TOTAL;
     return (
         <React.Fragment>
             {content}
-            <div id="set-bar" style={{ height: (set / SET_TOTAL * 100) + '%' }}></div>
+            <div id="set-bar" style={{
+                ...(animating ? {
+                    animationName: 'fill',
+                    animationTimingFunction: 'linear',
+                    animationDuration: totalLength + 'ms'
+                } : {})
+            }}></div>
         </React.Fragment>
     )
 

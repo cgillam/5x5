@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Lift from './Lift.js';
 import Exercise from './exercise.js';
 import { Delay } from './helper.js';
-import { Button, TextField, Dialog, Paper } from '@material-ui/core'
+import { Button, TextField, Dialog, Paper, Grid } from '@material-ui/core'
 
 const DEFAULT_WEIGHT = 145;
 
@@ -82,7 +82,16 @@ export default function Tracker({ planId, exercises }) {
 
     return (
         <React.Fragment>
-            <Button onClick={() => setStarted(true)}>Start</Button>
+            <Grid
+                container
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                justify="center"
+                style={{ minHeight: '75vh' }}
+            >
+                <Button onClick={() => setStarted(true)}>Start</Button>
+            </Grid>
             <Dialog
                 open={started}
                 onClose={() => setStarted(false)}
