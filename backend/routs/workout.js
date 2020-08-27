@@ -1,6 +1,6 @@
 const router = require("express-promise-router")()
 
-const workout = require("../contolers/workout.js")
+const workout = require("../contolers/Workout.js")
 const { loggedIn } = require('./middlewares.js');
 
 

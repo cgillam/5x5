@@ -1,5 +1,5 @@
 const router = require("express-promise-router")()
-const user = require("../contolers/user.js")
+const user = require("../contolers/User.js")
 
 
 
