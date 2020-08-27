@@ -1,0 +1,27 @@
+{
+  "name": "5x5",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": "12.x"
+  },
+  "scripts": {
+    "start": "npm run start --prefix backend",
+    "build": "npm run build --prefix 5x5_frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cgillam/5x5.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cgillam/5x5/issues"
+  },
+  "homepage": "https://github.com/cgillam/5x5#readme",
+  "dependencies": {
+    "5x5_frontend": "file:5x5_frontend",
+    "backend": "file:backend"
+  }
+}
