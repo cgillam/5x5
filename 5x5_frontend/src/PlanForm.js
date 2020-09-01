@@ -1,6 +1,13 @@
 import React from "react"
 import { Button, ButtonGroup, TextField, Paper } from '@material-ui/core'
 
+const fileToBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+});
+
 export default function PlanForm({ plan, setPlan, addPlan }) {
     const insertSlot = (i) => {
         const newSlots = [...plan.exerciseSlots];
@@ -99,12 +106,11 @@ export default function PlanForm({ plan, setPlan, addPlan }) {
         newSlots[i][j] = { ...newSlots[i][j], buffer: newBuffer };
         setPlan({ ...plan, exerciseSlots: newSlots });
     }
-    const setExerciseImage = (i, j, newFile) => {
-        console.log(newFile);
-        // TODO - convert image to base64, store image in object
-        //const newSlots = [...plan.exerciseSlots];
-        //newSlots[i][j] = { ...newSlots[i][j], image: newImage };
-        //setPlan({ ...plan, exerciseSlots: newSlots });
+    const setExerciseImage = async (i, j, newFile) => {
+        const newImage = await fileToBase64(newFile);
+        const newSlots = [...plan.exerciseSlots];
+        newSlots[i][j] = { ...newSlots[i][j], image: newImage };
+        setPlan({ ...plan, exerciseSlots: newSlots });
     }
     const setStageAction = (i, j, k, newAction) => {
         const newSlots = [...plan.exerciseSlots];

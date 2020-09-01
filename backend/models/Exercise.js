@@ -5,7 +5,7 @@ module.exports = mongoose.model('Exercise', new mongoose.Schema({
     title: {
         type: String,
         required: true,
-        minlength: 3
+        minlength: 2
     },
     buffer: {
         type: Number,
@@ -19,7 +19,7 @@ module.exports = mongoose.model('Exercise', new mongoose.Schema({
             action: {
                 type: String,
                 required: true,
-                minlength: 3
+                minlength: 2
             },
             duration: {
                 type: Number,

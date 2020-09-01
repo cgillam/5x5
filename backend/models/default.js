@@ -10,27 +10,27 @@ const DefaultExersiserPlan = {
         [{
             title: 'Squat',
             image: fs.readFileSync(path.join(__dirname, '../assets/barbell-squat.gif')).toString('base64'),
-            buffer: 5000,
+            buffer: 20000,
             stages: [{ action: 'Squat', duration: 4000 }, { action: 'Raise', duration: 2000 }, { action: 'Reset', duration: 4000 }],
         }], [{
             title: 'Bench',
             image: fs.readFileSync(path.join(__dirname, '../assets/bench.gif')).toString('base64'),
-            buffer: 5000,
+            buffer: 20000,
             stages: [{ action: 'Lower', duration: 4000 }, { action: 'Pause', duration: 2000 }, { action: 'Raise', duration: 4000 }],
         }, {
             title: 'Press',
             image: fs.readFileSync(path.join(__dirname, '../assets/military-press.gif')).toString('base64'),
-            buffer: 5000,
+            buffer: 20000,
             stages: [{ action: 'Lower', duration: 4000 }, { action: 'Pause', duration: 2000 }, { action: 'Raise', duration: 4000 }],
         }], [{
             title: 'Row',
             image: fs.readFileSync(path.join(__dirname, '../assets/row.gif')).toString('base64'),
-            buffer: 5000,
+            buffer: 20000,
             stages: [{ action: 'Raise', duration: 4000 }, { action: 'Lower', duration: 2000 }, { action: 'Reset', duration: 4000 }],
         }, {
             title: 'Deadlift',
             image: fs.readFileSync(path.join(__dirname, '../assets/conventional-deadlifts-2-4.gif')).toString('base64'),
-            buffer: 5000,
+            buffer: 20000,
             stages: [{ action: 'Raise', duration: 4000 }, { action: 'Lower', duration: 200 }, { action: 'Reset', duration: 4000 }],
         }]
     ]

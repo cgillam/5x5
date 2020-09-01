@@ -16,6 +16,7 @@ export default function Plans({ plans, setPlans, planID, setPlanID }) {
     const addPlan = (plan) => {
         setPlans([...plans, plan])
         setPlanID(plan._id)
+        setOpen(false)
     }
 
     return (
@@ -51,6 +52,10 @@ export default function Plans({ plans, setPlans, planID, setPlanID }) {
                                 <Button disabled={planID === plan._id} color="primary" variant="outlined" onClick={() => setPlanID(plan._id)}>Select</Button>
                                 <Button color="primary" variant="outlined" onClick={() => setOpen(true)}>New Plan</Button>
                             </ButtonGroup>
+                            {plan.author
+                                ? <p>Created By: {plan.author.userName}</p>
+                                : null
+                            }
                             <p>Created: {new Date(plan.createdAt).toDateString()}</p>
                             <Paper style={{ backgroundColor: 'black', color: 'white', padding: '0.5em', display: 'flex', flexWrap: 'wrap' }}>
                                 {plan.exerciseSlots.map((slot, i) =>

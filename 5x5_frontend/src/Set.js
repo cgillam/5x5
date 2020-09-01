@@ -55,7 +55,7 @@ export default function Set({ muted, number, nextSet }) {
         if (intervalRef.current) clearInterval(intervalRef.current);
         intervalRef.current = setInterval(() => {
             setStageRemaining(Math.max(0, stageEnding - Date.now()));
-        }, 100);
+        }, 10);
         return () => clearInterval(intervalRef.current);
     }, [stageEnding]);
 

@@ -76,7 +76,13 @@ exports.submit = async (req, res) => {
 }
 
 exports.history = async (req, res) => {
-    const workouts = (await Workout.find({ user: req.user }).populate({ path: "plan", populate: { path: 'exerciseSlots', model: "Exercise" } })).map(workout => workout.toJSON());
+    const workouts = (await Workout.find({ user: req.user }).populate({ path: "plan", populate: { path: 'exerciseSlots', model: "Exercise" } })).map(workout => {
+        const workoutObj = workout.toJSON();
+        workoutObj.plan.exerciseSlots.forEach(slot => slot.forEach(exercise => {
+            delete exercise.image;
+        }));
+        return workoutObj;
+    });
 
     return res.json({ workouts });
 }

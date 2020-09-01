@@ -34,6 +34,7 @@ export default function Rep({ muted, number, nextRep }) {
 
     const [stageIndex, setStageIndex] = useState(lastStageIndex);
     const stage = exercise.stages[stageIndex];
+    const [ending, setEnding] = useState(0);
     const [remaining, setRemaining] = useState(0);
     const [first, setFirst] = useState(true);
 
@@ -45,8 +46,10 @@ export default function Rep({ muted, number, nextRep }) {
             play();
             setStageIndex(stageIndex => {
                 const newStage = (stageIndex + 1) % (lastStageIndex + 1);
-                setRemaining(exercise.stages[newStage].duration);
-                setTimeout(() => playHalf(), exercise.stages[newStage].duration / 2);
+                const duration = exercise.stages[newStage].duration
+                setEnding(Date.now() + duration);
+                setRemaining(duration);
+                setTimeout(() => playHalf(), duration / 2);
 
                 return newStage;
             });
@@ -54,9 +57,9 @@ export default function Rep({ muted, number, nextRep }) {
         }
         const interval = setInterval(() => {
             setRemaining(remaining => {
-                return Math.max(0, remaining - 100);
+                return Math.max(0, ending - Date.now());
             });
-        }, 100);
+        }, 10);
 
         return () => clearInterval(interval);
     }, [stageIndex, stageFinished]);

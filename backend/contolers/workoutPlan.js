@@ -12,7 +12,7 @@ exports.default = async (req, res) => {
 
 exports.getByID = async (req, res) => {
     const { id } = req.params
-    const plan = await (await WorkoutPlan.findById(id)).populate({ path: 'exerciseSlots', model: "Exercise" });
+    const plan = await (await WorkoutPlan.findById(id)).populate({ path: 'exerciseSlots', model: "Exercise" }).populate('author', 'userName');
     if (!plan) return res.status(404).end()
     res.json({ plan })
 
@@ -21,8 +21,19 @@ exports.getByID = async (req, res) => {
 
 
 exports.list = async (req, res) => {
-    const plans = await WorkoutPlan.find({ deleted: { $exists: false } }).populate({ path: 'exerciseSlots', model: "Exercise" });
-    res.json({ plans: plans.map((plan) => plan.toJSON()) })
+    const plans = await WorkoutPlan
+        .find({ deleted: { $exists: false } })
+        .populate({ path: 'exerciseSlots', model: "Exercise" })
+        .populate('author', 'userName');
+    res.json({
+        plans: plans.map((plan) => {
+            const objPlan = plan.toJSON();
+            objPlan.exerciseSlots.forEach(slot => slot.forEach(exercise => {
+                delete exercise.image;
+            }));
+            return objPlan;
+        })
+    })
 }
 
 exports.deleteByID = async (req, res) => {

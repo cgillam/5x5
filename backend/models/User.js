@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
     userName: {
         type: String,
         required: true,
-        minlength: 3,
+        minlength: 2,
         unique: true,
     },
     passWord: {

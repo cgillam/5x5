@@ -19,6 +19,10 @@ body, html {
   100% { transform: translateX(250%);  }
 }
 
+.MuiDialog-paperScrollBody.intro-modal{
+  text-align: center;
+}
+
 .MuiDialog-paperScrollBody.exercise-modal{
   height: 50vh;
   box-shadow: 0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1);

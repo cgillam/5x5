@@ -25,7 +25,7 @@ app.use(express.static(CONSTANCE.FRONTEND_STATIC))
 app.use(cookieParser(SECRET))
 //app.use(express.urlencoded({ extended: true }))
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: '100mb' }))
 app.use(multer().none())
 app.use(session({
 

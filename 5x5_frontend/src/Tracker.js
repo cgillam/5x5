@@ -111,7 +111,10 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
                             maxWidth={'xs'}
                         >
                             <img
-                                src={`data:image/png;base64, ${exercise.image}`}
+                                src={exercise.image.includes('data:image')
+                                    ? exercise.image
+                                    : `data:image/gif;base64, ${exercise.image}`
+                                }
                                 style={{ width: '100%' }}
                             />
                         </Dialog>
