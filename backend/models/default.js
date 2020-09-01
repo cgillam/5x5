@@ -1,10 +1,12 @@
+// Default data required to be seeded to the database
+
 const fs = require('fs');
 const path = require('path');
 
 const WorkoutPlan = require("./workouPlan.js");
 const Exercise = require('./Exercise');
 
-
+// Initial exercise plan
 const DefaultExersiserPlan = {
     exerciseSlots: [
         [{
@@ -37,8 +39,11 @@ const DefaultExersiserPlan = {
 };
 
 
+// In-memory cache of default plan
 let defaultPlan;
 
+// Return the cached memory plan, or create/find all exercises, then create/find the workout plan,
+// then caches the plan
 module.exports = async () => {
     if (defaultPlan) return defaultPlan;
 
@@ -49,7 +54,9 @@ module.exports = async () => {
         }
     }
 
+    // Find or create the plan
     const rawPlan = await WorkoutPlan.findOne(DefaultExersiserPlan) || await new WorkoutPlan(DefaultExersiserPlan).save();
+    // Populate the exercise slots of the plan
     const plan = await rawPlan.populate({ path: 'exerciseSlots', model: "Exercise" }).execPopulate();
     defaultPlan = plan
     return plan

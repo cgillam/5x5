@@ -1,21 +1,25 @@
 import React, { useContext, useRef, useState } from "react"
-import UserContext from './user.js'
 import { Button, TextField, Paper, Box, Grid, Dialog, DialogTitle } from '@material-ui/core'
+
+import UserContext from './user.js'
 import FeaturesImage from './gif 1.gif'
 
+
 export default function Authenticate() {
-    const user = useContext(UserContext)
+    // Get user ID and setUser
+    const { _id, setUser } = useContext(UserContext)
     const [intro, setIntro] = useState(false);
 
+    // Reference to form, to easly create formdata object
     const formRef = useRef(null)
-    if (user._id) return (
+
+    // If logged in, only show logout button
+    if (_id) return (
         <Button
             onClick={() => {
+                // Log the current user out
                 fetch("/api/user/logout", { credentials: 'include' })
-                    .then((res) => {
-                        console.log(res)
-                        user.setUser({})
-                    })
+                    .then((res) => setUser({}))
             }}
             style={{
                 position: 'fixed',
@@ -25,24 +29,19 @@ export default function Authenticate() {
         >Log Out</Button>
     );
 
-    const submitForm = (login) => {
-        const data = new FormData(formRef.current);
-        fetch(`/api/user/${login ? "login" : "signup"}`, {
-            method: 'post',
-            body: data,
-            credentials: "include"
-        }).then(res => {
-            if (res.ok) return res.json()
+    // Handle form submission - both for login and signup
+    const submitForm = (login) => fetch(`/api/user/${login ? "login" : "signup"}`, {
+        method: 'post',
+        body: new FormData(formRef.current),
+        credentials: "include"
+    }).then(res => {
+        // Return parsed user object if successful
+        if (res.ok) return res.json()
 
-            res.text().then((text) => alert(text));
-            return {}
-        })
-
-            .then(newUser => {
-                user.setUser(newUser)
-            })
-
-    }
+        // Display text of non-OK response
+        res.text().then((text) => alert(text));
+        return {}
+    }).then(currUser => setUser(currUser))
 
     return (
         <Grid container justify="center" style={{ minHeight: '75vh' }}>

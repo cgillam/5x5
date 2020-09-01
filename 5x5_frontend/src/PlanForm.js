@@ -1,6 +1,7 @@
 import React from "react"
 import { Button, ButtonGroup, TextField, Paper } from '@material-ui/core'
 
+// Convert file to base64
 const fileToBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result);
@@ -51,7 +52,6 @@ export default function PlanForm({ plan, setPlan, addPlan }) {
 
     }
     const deleteExercise = (i, j) => {
-        // TOOD - fix delete function
         const newPlan = {
             ...plan, exerciseSlots: plan.exerciseSlots.filter((slot, index) => {
                 if (i !== index) return slot;
@@ -95,7 +95,6 @@ export default function PlanForm({ plan, setPlan, addPlan }) {
 
 
 
-    // TODO - properly clone all four setter data sources
     const setExerciseTitle = (i, j, newTitle) => {
         const newSlots = [...plan.exerciseSlots];
         newSlots[i][j] = { ...newSlots[i][j], title: newTitle };
@@ -124,11 +123,12 @@ export default function PlanForm({ plan, setPlan, addPlan }) {
         setPlan({ ...plan, exerciseSlots: newSlots });
     }
 
+    // Submit button, to be added to multiple locations
     const submitButton = <Button color="primary" variant="outlined" onClick={() => fetch('/api/plans/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(plan)
-    }).then(r => console.log(r) || r.json()).then(({ plan }) => addPlan(plan))} style={{
+    }).then(r => r.json()).then(({ plan }) => addPlan(plan))} style={{
         boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)'
     }}>Submit</Button>
 
@@ -157,12 +157,6 @@ export default function PlanForm({ plan, setPlan, addPlan }) {
                         <ul style={{ listStyleType: 'none' }}>
                             {slot.map((exercise, j) =>
                                 <li key={j}>
-                                    {/*
-                                    <Button color="primary" variant="outlined" onClick={() => insertExercise(i, j)}>Add Above</Button>
-                                    <Button color="primary" variant="outlined" onClick={() => insertExercise(i, j + 1)}>Add Below</Button>
-                                    <Button color="primary" variant="outlined" onClick={() => moveExercise(i, j, -1)}>Move Up</Button>
-                                    <Button color="primary" variant="outlined" onClick={() => moveExercise(i, j, 1)}>Move Down</Button>
-                                    */}
                                     <Button style={{ float: 'right', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} color="primary" variant="outlined" onClick={() => deleteExercise(i, j)}>Delete</Button>
                                     <br />
                                     <TextField style={{ margin: '0.5em', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} variant="outlined" color="primary" label="Title" value={exercise.title} onChange={(e) => setExerciseTitle(i, j, e.target.value)} />
@@ -178,12 +172,6 @@ export default function PlanForm({ plan, setPlan, addPlan }) {
                                     <ul style={{ listStyleType: 'none' }}>
                                         {exercise.stages.map((stage, k) =>
                                             <li key={k}>
-                                                {/*
-                                                <Button color="primary" variant="outlined" onClick={() => insertStage(i, j, k)}>Add Above</Button>
-                                                <Button color="primary" variant="outlined" onClick={() => insertStage(i, j, k + 1)}>Add Below</Button>
-                                                <Button color="primary" variant="outlined" onClick={() => moveStage(i, j, k, -1)}>Move Up</Button>
-                                                <Button color="primary" variant="outlined" onClick={() => moveStage(i, j, k, 1)}>Move Down</Button>
-                                                */}
                                                 <Button style={{ float: 'right', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} color="primary" variant="outlined" onClick={() => deleteStage(i, j, k)}>Delete</Button>
                                                 <br />
                                                 <TextField style={{ margin: '0.5em', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} variant="outlined" color="primary" label="Action" value={stage.action} onChange={(e) => setStageAction(i, j, k, e.target.value)} />

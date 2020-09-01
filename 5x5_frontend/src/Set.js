@@ -1,46 +1,72 @@
 import React, { useState, useEffect, useContext, useRef } from "react"
+
+
 import Rep from './Rep.js'
 import Exercise from './exercise.js';
+
 
 const DELAY = 180000;
 
 const REP_TOTAL = 5;
 
 export default function Set({ muted, number, nextSet }) {
-    const { buffer, stages } = useContext(Exercise);
+    // Length of buffer for breething timer
+    const { buffer } = useContext(Exercise);
 
+    // Current rep
     const [rep, setRep] = useState(0);
+
+    // Remaining and ending for delay between sets
     const [remaining, setRemaining] = useState(0);
     const [mainEnding, setMainEnding] = useState(0);
 
+    // Remaining and ending for breething timer
     const [stageRemaining, setStageRemaining] = useState(0);
     const [stageEnding, setStageEnding] = useState(0);
 
 
     const breething = remaining > buffer && remaining < DELAY - buffer;
 
+    // Update breething timer whenever the breething state changes
+    // Keep track of first mount
     const [first, setFirst] = useState(true);
 
+    // Start the stage on the last one to roll over
     const [stage, setStage] = useState(3);
-    const stageText = { 0: 'Breathe In', 1: 'Hold', 2: 'Brethe Out', 3: 'Hold' }[stage];
-    const stageFinished = !stageRemaining;
-    const intervalRef = useRef();
 
+    // Stop the breething bar    // Get text from current stage index
+    const stageText = { 0: 'Breathe In', 1: 'Hold', 2: 'Brethe Out', 3: 'Hold' }[stage];
+    // Determine if the stage is finished
+    const stageFinished = !stageRemaining;
+
+    // Go onto the next bar, or stop it
+    // Keep track of 
+    // If no longer breething, stop the barbreething interval, to allow for clearing of it
+    const intervalRef = useRef();
+    // If finished breething, then go onto the next breething stage
+
+    // Update breething timer whenever the breething state changes
     useEffect(() => {
         const duration = breething ? 4000 : 0
         setStageEnding(Date.now() + duration);
         setStageRemaining(duration);
     }, [breething])
 
+    // Stop the breething bar
     const stopBar = () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
     }
 
+    // Countdown the main delay timer
+    // Go onto the next bar, or stop it
     useEffect(() => {
+        // If no longer breething, stop the bar
         if (!breething) return stopBar();
+        // If finished breething, then go onto the next breething stage
         if (stageFinished) {
             if (first) setFirst(false);
             setStage(stage => {
+                // If finished all reps, start up the main delay timer
                 const newStage = (stage + 1) % 4;
                 setStageEnding(Date.now() + 4000);
                 setStageRemaining(4000);
@@ -51,6 +77,7 @@ export default function Set({ muted, number, nextSet }) {
         }
     }, [stage, stageFinished, remaining, breething]);
 
+    // Countdown the main delay timer
     useEffect(() => {
         if (intervalRef.current) clearInterval(intervalRef.current);
         intervalRef.current = setInterval(() => {
@@ -59,6 +86,7 @@ export default function Set({ muted, number, nextSet }) {
         return () => clearInterval(intervalRef.current);
     }, [stageEnding]);
 
+    // If finished all reps, start up the main delay timer
     useEffect(() => {
         if (rep !== REP_TOTAL + 1 && rep !== 0) return;
 
@@ -67,6 +95,7 @@ export default function Set({ muted, number, nextSet }) {
         setRemaining(duration);
     }, [rep]);
 
+    // Update main ending interval timer
     useEffect(() => {
         const interval = setInterval(() => {
             setRemaining(remaining => Math.max(0, mainEnding - Date.now()));
@@ -75,6 +104,7 @@ export default function Set({ muted, number, nextSet }) {
         return () => clearInterval(interval);
     }, [mainEnding])
 
+    // Increment the set when the main timer is finished
     useEffect(() => {
         if (!first && !remaining) {
             setRep(1);
@@ -82,24 +112,20 @@ export default function Set({ muted, number, nextSet }) {
         }
     }, [remaining]);
 
+    // Flip the first boolean
     useEffect(() => {
         setFirst(false);
     }, []);
 
-    let animating;
-    let content;
-    if (rep > 0 && rep < REP_TOTAL + 1) {
-        animating = true;
-        content = <Rep muted={muted} number={rep - 1} nextRep={() => setRep(rep + 1)} />
-    } else {
-        animating = false;
-        content = (
-            <div>
-                {breething ? <p>{stageText}</p> : null}
-                {!breething ? remaining <= buffer ? <p>Prepare</p> : <p>Reset the bar</p> : null}
-            </div>
-        )
-    }
+    // Show rep if repping, otherwise main timer
+    const repping = rep > 0 && rep < REP_TOTAL + 1;
+    const content = repping
+        ? <Rep muted={muted} number={rep - 1} nextRep={() => setRep(rep + 1)} />
+        : <div>
+            {breething ? <p>{stageText}</p> : null}
+            {!breething ? remaining <= buffer ? <p>Prepare</p> : <p>Reset the bar</p> : null}
+        </div>
+
     return (
         <div>
             {number ? <p> Set #{number} </p> : null}

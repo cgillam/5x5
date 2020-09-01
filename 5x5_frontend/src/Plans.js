@@ -1,28 +1,42 @@
 import React, { useStage, useEffect, useState } from 'react';
-import PlanForm from './PlanForm'
 import { Button, Dialog, DialogTitle, ButtonGroup, Paper } from '@material-ui/core'
 
-//const cloneCurrentPlan = (plans, id) => ({ ...JSON.parse(JSON.stringify(plans.find((plan) => plan._id === id) || { exerciseSlots: [] })) })
-const cloneCurrentPlan = (plans, id) => ({ exerciseSlots: [[{ title: 'Exercise', buffer: 1000, stages: [{ action: 'Up', duration: 5000 }, { action: 'Down', duration: 5000 }] }]] })
+import PlanForm from './PlanForm'
 
-export default function Plans({ plans, setPlans, planID, setPlanID }) {
-    const [editingPlan, setEditingPlan] = useState(cloneCurrentPlan(plans, planID))
-    const [open, setOpen] = useState(false);
 
+const defaultPlan = { exerciseSlots: [[{ title: 'Exercise', buffer: 1000, stages: [{ action: 'Up', duration: 5000 }, { action: 'Down', duration: 5000 }] }]] }
+
+export default function Plans({ planID, setPlanID }) {
+    const [plans, setPlans] = useState([]);
     useEffect(() => {
-        setEditingPlan(cloneCurrentPlan(plans, planID))
+        fetch('/api/plans/list')
+            .then(r => r.json())
+            .then(({ plans }) => setPlans(plans))
+            .catch(console.error)
+    }, []);
+
+    // Data of new plan
+    const [editingPlan, setEditingPlan] = useState(JSON.parse(JSON.stringify(defaultPlan)))
+
+    const [editing, setEditing] = useState(false);
+
+    // Reset editin data whenever plan ID updates
+    useEffect(() => {
+        setEditingPlan(JSON.parse(JSON.stringify(defaultPlan)))
     }, [planID])
 
+    // When a plan is added, add it, select it, and close the editing plan form
     const addPlan = (plan) => {
         setPlans([...plans, plan])
         setPlanID(plan._id)
-        setOpen(false)
+        setEditing(false)
     }
 
     return (
         <React.Fragment>
             <ul style={{ listStyleType: 'none' }}>
                 {plans.map((plan) => {
+                    // Get length of longest exercise slot
                     const longestSlot = plan.exerciseSlots.reduce((longest, slot) =>
                         slot.length < longest ? longest : slot.length, 0
                     )
@@ -39,10 +53,13 @@ export default function Plans({ plans, setPlans, planID, setPlanID }) {
 
                             <ButtonGroup color="primary" style={{ float: 'right' }}>
                                 {plan.author ? <Button color="primary" variant="outlined" onClick={() => {
+                                    // Delete button visible on plans that have an author
+                                    // TODO - don't show button if the author is not the current user
                                     fetch("/api/plans/" + plan._id, {
                                         method: "delete"
                                     }).then(response => {
                                         if (!response.ok) return
+                                        // Get the ID of the plan, filter it out, and update the selected plan ID accordingly
                                         const planIndex = plans.findIndex((loopPlan) => loopPlan._id === plan._id);
                                         const newPlans = plans.filter((_, i) => i !== planIndex);
                                         setPlans(newPlans);
@@ -50,9 +67,9 @@ export default function Plans({ plans, setPlans, planID, setPlanID }) {
                                     })
                                 }}>Delete</Button> : null}
                                 <Button disabled={planID === plan._id} color="primary" variant="outlined" onClick={() => setPlanID(plan._id)}>Select</Button>
-                                <Button color="primary" variant="outlined" onClick={() => setOpen(true)}>New Plan</Button>
+                                <Button color="primary" variant="outlined" onClick={() => setEditing(true)}>New Plan</Button>
                             </ButtonGroup>
-                            {plan.author
+                            {plan.author // Show author if available
                                 ? <p>Created By: {plan.author.userName}</p>
                                 : null
                             }
@@ -63,20 +80,19 @@ export default function Plans({ plans, setPlans, planID, setPlanID }) {
                                         <p>slot: {i + 1}</p>
                                         <ul>
                                             {idxArr.map(j => {
+                                                // Get current exercise - loops around the slot for shorter exercise slots
                                                 const exercise = slot[j % slot.length];
                                                 return (
                                                     <li key={j + '.' + exercise._id} >
                                                         <p>name: {exercise.title}</p>
                                                         <p>buffer: {exercise.buffer / 1000}s</p>
                                                         <ul>
-
                                                             {exercise.stages.map((stage, j) =>
                                                                 <li key={j} >
                                                                     <p>action: {stage.action}</p>
                                                                     <p>duration: {stage.duration / 1000}s</p>
                                                                 </li>
                                                             )}
-
                                                         </ul>
                                                     </li>
                                                 )
@@ -92,8 +108,8 @@ export default function Plans({ plans, setPlans, planID, setPlanID }) {
                 })}
             </ul>
             <Dialog
-                open={open}
-                onClose={() => setOpen(false)}
+                open={editing}
+                onClose={() => setEditing(false)}
                 scroll="body"
                 classes={{ paperScrollBody: 'grey-modal' }}
             >

@@ -1,3 +1,5 @@
+// Main router that collects all subrouters
+
 const router = require("express-promise-router")();
 
 const user = require("./user.js");

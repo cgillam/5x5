@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import Tracker from './Tracker.js'
+import { Tab, Button } from '@material-ui/core'
+import { TabContext, TabList, TabPanel } from '@material-ui/lab'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
 import './App.css';
 import User from './user.js';
 import Authenticate from './authenticate.js'
+import Tracker from './Tracker.js'
 import HistoryTable from './HistoryTable.js'
 import Plans from './Plans.js'
-import { Tab, Button } from '@material-ui/core'
-import { TabContext, TabList, TabPanel } from '@material-ui/lab'
-
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
 
 const theme = createMuiTheme({
@@ -20,34 +19,38 @@ const theme = createMuiTheme({
   },
 });
 
+
 function App() {
+  // Keep track of the currently selected tab
   const [tab, setTab] = useState('home');
+  // Sound mute state
   const [muted, setMuted] = useState(false);
 
+  // Currently logged in user
   const [user, setUser] = useState({});
+  // Exercises to workout to
   const [exercises, setExercises] = useState([]);
+  // Plan exercises belong to
   const [planID, setPlanID] = useState(null)
-  const [plans, setPlans] = useState([])
 
+  // Fetch the current user on mount
   useEffect(() => {
     fetch('/api/user/current')
-      .then(r => console.log(r) || r.json())
-      .then(newUser => {
-        setUser(newUser);
-      }).catch(() => undefined)
-    fetch('/api/plans/list')
-      .then(r => console.log(r) || r.json())
-      .then(({ plans }) => {
-        setPlans(plans);
-      }).catch(() => undefined)
+      .then(r => r.json())
+      .then(currUser => setUser(currUser))
+      .catch(console.error)
   }, []);
 
+  // Fetch the current plan whenever the user changes or the plan ID is updated
   useEffect(() => {
     fetch('/api/workout/next?planId=' + (planID || ''))
-      .then(r => console.log(r) || r.json())
+      .then(r => r.json())
       .then(({ planId, exercises, weights }) => {
+        // Add weights to all the exercises
         exercises.forEach((exercise, i) => exercise.weight = weights[i]);
-        if (planId) setPlanID(planId) || console.log('set from', planID, 'to', planId)
+        // Set the plan id if it's not-null
+        if (planId) setPlanID(planId)
+
         setExercises(exercises);
       });
   }, [user, planID]);
@@ -64,19 +67,19 @@ function App() {
 
           <Authenticate />
 
-          {!user._id
-            ? null
-            : <React.Fragment>
+          {user._id // Only show tab content when logged in
+            ? <React.Fragment>
               <TabPanel value="home">
                 <Tracker planId={planID} exercises={exercises} muted={muted} setMuted={setMuted} />
               </TabPanel>
               <TabPanel value="plans">
-                <Plans plans={plans} setPlans={setPlans} planID={planID} setPlanID={(id) => console.log('pid to', id) || setPlanID(id)} />
+                <Plans planID={planID} setPlanID={(id) => console.log('pid to', id) || setPlanID(id)} />
               </TabPanel>
               <TabPanel value="history">
                 <HistoryTable />
               </TabPanel>
             </React.Fragment>
+            : null
           }
         </TabContext>
       </User.Provider>

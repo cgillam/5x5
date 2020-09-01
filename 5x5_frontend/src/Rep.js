@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useContext } from "react"
-import Exercise from './exercise.js'
 import { keyframes } from "styled-components/macro"
 import useSound from 'use-sound'
 
+import Exercise from './exercise.js'
 
+
+// Functions that generate the animation keyframes based on the exercise stages and length of the entire animation
 const animationGenertators = {
     1: () => `
         0% { height:0%; }
@@ -26,44 +28,58 @@ const animationGenertators = {
     }
 }
 export default function Rep({ muted, number, nextRep }) {
+    // Get the exercise and index of the last stage
     const exercise = useContext(Exercise);
     const lastStageIndex = exercise.stages.length - 1;
 
+    // Boop sound effects - one at full, the other at half volume
     const [play] = useSound('https://raw.githubusercontent.com/joshwcomeau/use-sound/master/stories/sounds/boop.mp3', { volume: muted ? 0 : 1 });
     const [playHalf] = useSound('https://raw.githubusercontent.com/joshwcomeau/use-sound/master/stories/sounds/boop.mp3', { volume: muted ? 0 : 0.5 });
 
+    // Index of the current stage - initally set to last to properly roll over
     const [stageIndex, setStageIndex] = useState(lastStageIndex);
+    // Current stage
     const stage = exercise.stages[stageIndex];
+
+    // When the current timer is ending, and the time remaining for the current timer
     const [ending, setEnding] = useState(0);
     const [remaining, setRemaining] = useState(0);
+    // If it's the first render
     const [first, setFirst] = useState(true);
 
+    // If the stage is finished
     const stageFinished = !remaining;
+    // Go onto the next stage if finished, otherwise set the interal for the current stage
     useEffect(() => {
         if (stageFinished) {
+            // If it's not the first mount and the last stage index, go to the next rep
             if (stageIndex === lastStageIndex && !first) nextRep();
+            // Flip the first boolean
             if (first) setFirst(false);
+
             play();
+            // Set the stage index to the next stage index - cycling around to the first as needed
             setStageIndex(stageIndex => {
                 const newStage = (stageIndex + 1) % (lastStageIndex + 1);
                 const duration = exercise.stages[newStage].duration
                 setEnding(Date.now() + duration);
                 setRemaining(duration);
+                // Play the half sound in the middle of this stage
                 setTimeout(() => playHalf(), duration / 2);
 
                 return newStage;
             });
             return;
         }
-        const interval = setInterval(() => {
-            setRemaining(remaining => {
-                return Math.max(0, ending - Date.now());
-            });
-        }, 10);
+        // Decrement the remaining until it's down to 0
+        const interval = setInterval(() =>
+            setRemaining(remaining => Math.max(0, ending - Date.now())),
+            10);
 
         return () => clearInterval(interval);
     }, [stageIndex, stageFinished]);
 
+    // Length of a single rep, function to generate animation keyframes, and generated keyframes
     const repDuration = exercise.stages.reduce((ttl, stage) => ttl + stage.duration, 0);
     const animationGenertator = animationGenertators[exercise.stages.length] || animationGenertators[1];
     const animationKeyframes = keyframes([], animationGenertator(exercise.stages, repDuration).split('\n'));

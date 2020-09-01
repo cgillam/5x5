@@ -1,6 +1,5 @@
 const mongoose = require("mongoose")
 
-// todo - add validate middleware to ensure exercises.length === weights
 module.exports = mongoose.model('Workout', new mongoose.Schema({
     user: {
         type: mongoose.Types.ObjectId,
