@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
 
 module.exports = mongoose.model('Exercise', new mongoose.Schema({
+    image: String,
     title: {
         type: String,
         required: true,

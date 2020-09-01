@@ -6,7 +6,7 @@ const DELAY = 180000;
 
 const REP_TOTAL = 5;
 
-export default function Set({ number, nextSet }) {
+export default function Set({ muted, number, nextSet }) {
     const { buffer, stages } = useContext(Exercise);
 
     const [rep, setRep] = useState(0);
@@ -90,7 +90,7 @@ export default function Set({ number, nextSet }) {
     let content;
     if (rep > 0 && rep < REP_TOTAL + 1) {
         animating = true;
-        content = <Rep number={rep - 1} nextRep={() => setRep(rep + 1)} />
+        content = <Rep muted={muted} number={rep - 1} nextRep={() => setRep(rep + 1)} />
     } else {
         animating = false;
         content = (

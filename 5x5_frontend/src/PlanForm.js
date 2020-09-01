@@ -99,6 +99,13 @@ export default function PlanForm({ plan, setPlan, addPlan }) {
         newSlots[i][j] = { ...newSlots[i][j], buffer: newBuffer };
         setPlan({ ...plan, exerciseSlots: newSlots });
     }
+    const setExerciseImage = (i, j, newFile) => {
+        console.log(newFile);
+        // TODO - convert image to base64, store image in object
+        //const newSlots = [...plan.exerciseSlots];
+        //newSlots[i][j] = { ...newSlots[i][j], image: newImage };
+        //setPlan({ ...plan, exerciseSlots: newSlots });
+    }
     const setStageAction = (i, j, k, newAction) => {
         const newSlots = [...plan.exerciseSlots];
         newSlots[i][j].stages[k] = { ...newSlots[i][j].stages[k], action: newAction };
@@ -155,6 +162,11 @@ export default function PlanForm({ plan, setPlan, addPlan }) {
                                     <TextField style={{ margin: '0.5em', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} variant="outlined" color="primary" label="Title" value={exercise.title} onChange={(e) => setExerciseTitle(i, j, e.target.value)} />
                                     <br />
                                     <TextField style={{ margin: '0.5em', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} variant="outlined" color="primary" label="Buffer" type="number" value={exercise.buffer} onChange={(e) => setExerciseBuffer(i, j, e.target.value)} />
+                                    <br />
+                                    <Button style={{ float: 'right', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} color="primary" variant="contained" component="label">
+                                        Set Image
+                                        <input type="file" style={{ display: "none" }} onChange={(e) => setExerciseImage(i, j, e.target.files[0])} />
+                                    </Button>
                                     <br />
                                     <Button style={{ float: 'right', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} color="primary" variant="outlined" onClick={() => insertStage(i, j, 0)} >Add Stage</Button>
                                     <ul style={{ listStyleType: 'none' }}>

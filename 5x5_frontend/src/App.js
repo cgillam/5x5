@@ -6,10 +6,11 @@ import User from './user.js';
 import Authenticate from './authenticate.js'
 import HistoryTable from './HistoryTable.js'
 import Plans from './Plans.js'
-import { Tab } from '@material-ui/core'
+import { Tab, Button } from '@material-ui/core'
 import { TabContext, TabList, TabPanel } from '@material-ui/lab'
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
 
 const theme = createMuiTheme({
   palette: {
@@ -21,6 +22,7 @@ const theme = createMuiTheme({
 
 function App() {
   const [tab, setTab] = useState('home');
+  const [muted, setMuted] = useState(false);
 
   const [user, setUser] = useState({});
   const [exercises, setExercises] = useState([]);
@@ -32,12 +34,12 @@ function App() {
       .then(r => console.log(r) || r.json())
       .then(newUser => {
         setUser(newUser);
-      })
+      }).catch(() => undefined)
     fetch('/api/plans/list')
       .then(r => console.log(r) || r.json())
       .then(({ plans }) => {
         setPlans(plans);
-      })
+      }).catch(() => undefined)
   }, []);
 
   useEffect(() => {
@@ -66,7 +68,7 @@ function App() {
             ? null
             : <React.Fragment>
               <TabPanel value="home">
-                <Tracker planId={planID} exercises={exercises} />
+                <Tracker planId={planID} exercises={exercises} muted={muted} setMuted={setMuted} />
               </TabPanel>
               <TabPanel value="plans">
                 <Plans plans={plans} setPlans={setPlans} planID={planID} setPlanID={(id) => console.log('pid to', id) || setPlanID(id)} />

@@ -1,35 +1,41 @@
-const WorkoutPlan = require("./workouPlan.js");
-const Exercise = require('./Exercise')
+const fs = require('fs');
+const path = require('path');
 
-// heroku scale web=0
+const WorkoutPlan = require("./workouPlan.js");
+const Exercise = require('./Exercise');
+
 
 const DefaultExersiserPlan = {
     exerciseSlots: [
-        [
-            {
-                title: 'Squat',
-                buffer: 30000,
-                stages: [{ action: 'Squat', duration: 4000 }, { action: 'Raise', duration: 2000 }, { action: 'Reset', duration: 4000 }],
-            }
-        ], [{
+        [{
+            title: 'Squat',
+            image: fs.readFileSync(path.join(__dirname, '../assets/barbell-squat.gif')).toString('base64'),
+            buffer: 5000,
+            stages: [{ action: 'Squat', duration: 4000 }, { action: 'Raise', duration: 2000 }, { action: 'Reset', duration: 4000 }],
+        }], [{
             title: 'Bench',
-            buffer: 30000,
+            image: fs.readFileSync(path.join(__dirname, '../assets/bench.gif')).toString('base64'),
+            buffer: 5000,
             stages: [{ action: 'Lower', duration: 4000 }, { action: 'Pause', duration: 2000 }, { action: 'Raise', duration: 4000 }],
         }, {
             title: 'Press',
-            buffer: 30000,
+            image: fs.readFileSync(path.join(__dirname, '../assets/military-press.gif')).toString('base64'),
+            buffer: 5000,
             stages: [{ action: 'Lower', duration: 4000 }, { action: 'Pause', duration: 2000 }, { action: 'Raise', duration: 4000 }],
         }], [{
             title: 'Row',
-            buffer: 30000,
+            image: fs.readFileSync(path.join(__dirname, '../assets/row.gif')).toString('base64'),
+            buffer: 5000,
             stages: [{ action: 'Raise', duration: 4000 }, { action: 'Lower', duration: 2000 }, { action: 'Reset', duration: 4000 }],
         }, {
             title: 'Deadlift',
-            buffer: 30000,
+            image: fs.readFileSync(path.join(__dirname, '../assets/conventional-deadlifts-2-4.gif')).toString('base64'),
+            buffer: 5000,
             stages: [{ action: 'Raise', duration: 4000 }, { action: 'Lower', duration: 200 }, { action: 'Reset', duration: 4000 }],
         }]
     ]
 };
+
 
 let defaultPlan;
 

@@ -5,7 +5,7 @@ import Exercise from './exercise.js';
 
 const SET_TOTAL = 5
 
-export default function Lift({ stage, nextLift }) {
+export default function Lift({ muted, nextLift }) {
     const { stages } = useContext(Exercise);
     const [set, setSet] = useState(0);
 
@@ -13,7 +13,7 @@ export default function Lift({ stage, nextLift }) {
     let content;
     if (set !== SET_TOTAL + 1) {
         animating = true;
-        content = <Set number={set} nextSet={() => setSet(set + 1)} />
+        content = <Set muted={muted} number={set} nextSet={() => setSet(set + 1)} />
     } else {
         animating = false;
         content = (

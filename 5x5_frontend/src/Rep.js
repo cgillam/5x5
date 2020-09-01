@@ -1,9 +1,36 @@
 import React, { useState, useEffect, useContext } from "react"
 import Exercise from './exercise.js'
+import { keyframes } from "styled-components/macro"
+import useSound from 'use-sound'
 
-export default function Rep({ number, nextRep }) {
+
+const animationGenertators = {
+    1: () => `
+        0% { height:0%; }
+        50% { height:100%; }
+        100% { height:0%; }
+    `,
+    2: ([first], length) => `
+        0% { height:0%; }
+        ${first.duration / length * 100}% { height:100%; }
+        100% { height:0%; }
+    `,
+    3: ([first, second], length) => {
+        const firstPercent = first.duration / length * 100
+        return `
+            0% { height:0%; }
+            ${firstPercent}% { height:100%; }
+            ${firstPercent + (second.duration / length * 100)}% { height:100%; }
+            100% { height:0%; }
+        `
+    }
+}
+export default function Rep({ muted, number, nextRep }) {
     const exercise = useContext(Exercise);
     const lastStageIndex = exercise.stages.length - 1;
+
+    const [play] = useSound('https://raw.githubusercontent.com/joshwcomeau/use-sound/master/stories/sounds/boop.mp3', { volume: muted ? 0 : 1 });
+    const [playHalf] = useSound('https://raw.githubusercontent.com/joshwcomeau/use-sound/master/stories/sounds/boop.mp3', { volume: muted ? 0 : 0.5 });
 
     const [stageIndex, setStageIndex] = useState(lastStageIndex);
     const stage = exercise.stages[stageIndex];
@@ -15,9 +42,11 @@ export default function Rep({ number, nextRep }) {
         if (stageFinished) {
             if (stageIndex === lastStageIndex && !first) nextRep();
             if (first) setFirst(false);
+            play();
             setStageIndex(stageIndex => {
                 const newStage = (stageIndex + 1) % (lastStageIndex + 1);
-                setRemaining(stage.duration);
+                setRemaining(exercise.stages[newStage].duration);
+                setTimeout(() => playHalf(), exercise.stages[newStage].duration / 2);
 
                 return newStage;
             });
@@ -32,19 +61,28 @@ export default function Rep({ number, nextRep }) {
         return () => clearInterval(interval);
     }, [stageIndex, stageFinished]);
 
-    const repLength = exercise.stages.reduce((ttl, stage) => ttl + stage.duration, 0) * 5;
+    const repDuration = exercise.stages.reduce((ttl, stage) => ttl + stage.duration, 0);
+    const animationGenertator = animationGenertators[exercise.stages.length] || animationGenertators[1];
+    const animationKeyframes = keyframes([], animationGenertator(exercise.stages, repDuration).split('\n'));
+
     return (
         <React.Fragment>
             <p>Rep #{number + 1}</p>
             <p>{stage.action}</p>
 
             <p>{remaining / 1000}s...</p>
-            <div id="exercise-bar" className={'breething'} style={{ animationDuration: (exercise.stages[0].duration * 2) + 'ms' }}></div>
+
+            <div
+                id="exercise-bar"
+                css={`
+                    animation: ${animationKeyframes} ${repDuration}ms ease-in-out infinite;
+                `}
+            ></div>
             <div id="rep-bar" style={{
                 ...(true ? {
                     animationName: 'fill',
                     animationTimingFunction: 'linear',
-                    animationDuration: repLength + 'ms',
+                    animationDuration: (repDuration * 5) + 'ms',
                     animationIterationCount: 'infinite',
                     backgroundColor: stageIndex % 2 === 0 ? 'grey' : 'grey'
                 } : {})
