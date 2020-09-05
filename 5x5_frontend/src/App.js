@@ -68,10 +68,17 @@ function App() {
         }
       }} >
         <TabContext value={tab}>
-          <TabList onChange={(_, newTab) => setTab(newTab)} centered variant="fullWidth">
+          <TabList onChange={(_, newTab) => {
+            if (newTab === 'logout') {
+              setUser({});
+              return fetch("/api/user/logout", { credentials: 'include' });
+            }
+            setTab(newTab)
+          }} centered variant="fullWidth">
             <Tab label="Home" value="home" />
-            <Tab label="Accessory Workout Plan" value="plans" />
+            <Tab label="Workout Plans" value="plans" />
             <Tab label="History" value="history" />
+            {user._id ? <Tab label="Logout" value="logout" /> : <></>}
           </TabList>
 
           <Authenticate />

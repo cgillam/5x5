@@ -16,6 +16,8 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
     // If showing help image
     const [help, setHelp] = useState(false);
 
+    const [paused, setPaused] = useState(0);
+
     // Stage of enter/normal/exit animation
     const [animating, setAnimating] = useState(2);
 
@@ -59,10 +61,9 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
     if (!exercise) return <h1>All exercises completed</h1>
 
     // If user has submitted weight, display lift, otherwise display form
-    console.log(weight);
     const content = (weight
         ? <div style={{ flex: '2' }}>
-            <Lift muted={muted} nextLift={async (comment) => {
+            <Lift muted={muted} paused={paused} nextLift={async (comment) => {
                 // Enter leaving animation for 1 second, entering for 1 second, and then normal state
                 setAnimating(3);
                 await Delay(1000);
@@ -139,14 +140,20 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
                             />
                         </Dialog>
                         {exercise.image // Only show button if image exists
-                            ? <Button onClick={() => setHelp(true)}>View Help</Button>
+                            ? <Button onClick={() => setHelp(true)} style={{ zIndex: 15 }}>View Help</Button>
                             : null
                         }
                         <Button
-                            style={{ position: 'absolute', right: 0, top: 0 }}
+                            style={{ position: 'absolute', right: 0, top: 0, zIndex: 15 }}
                             onClick={() => setMuted(!muted)}
                         >
                             {muted ? 'Unmute' : 'Mute'}
+                        </Button>
+                        <Button
+                            style={{ position: 'absolute', left: 0, top: 0, zIndex: 15 }}
+                            onClick={() => setPaused(paused ? 0 : Date.now())}
+                        >
+                            {paused ? 'Resume' : 'Pause'}
                         </Button>
                         <h2 style={{ flex: '1', zIndex: 11 }}>{exercise.title}</h2>
                         {content}

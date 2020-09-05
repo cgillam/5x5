@@ -21,23 +21,7 @@ export default function Authenticate() {
     const formRef = useRef(null)
 
     // If logged in, only show logout button
-    if (_id) return (
-        <Button
-            onClick={() => {
-                // Log the current user out
-                fetch("/api/user/logout", { credentials: 'include' })
-                    .then((res) => {
-                        setUser({})
-                        setAction('Login')
-                    })
-            }}
-            style={{
-                position: 'fixed',
-                top: 0,
-                right: 0
-            }}
-        >Log Out</Button>
-    );
+    if (_id) return null;
 
     // Handle form submission - both for login and signup
     const submitForm = () => {

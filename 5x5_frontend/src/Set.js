@@ -9,10 +9,9 @@ const DELAY = 180000;
 
 const REP_TOTAL = 5;
 
-export default function Set({ muted, number, nextSet }) {
+export default function Set({ muted, paused, number, nextSet }) {
     // Length of buffer for breething timer
     const { buffer } = useContext(Exercise);
-
     // Current rep
     const [rep, setRep] = useState(0);
 
@@ -120,7 +119,7 @@ export default function Set({ muted, number, nextSet }) {
     // Show rep if repping, otherwise main timer
     const repping = rep > 0 && rep < REP_TOTAL + 1;
     const content = repping
-        ? <Rep muted={muted} number={rep - 1} nextRep={() => setRep(rep + 1)} />
+        ? <Rep muted={muted} paused={paused} number={rep - 1} nextRep={() => setRep(rep + 1)} />
         : <div>
             {breething ? <p>{stageText}</p> : null}
             {!breething ? remaining <= buffer ? <p>Prepare</p> : <p>Reset the bar</p> : null}

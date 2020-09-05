@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react"
+import React, { useState, useEffect, useContext, useRef } from "react"
 import { keyframes } from "styled-components/macro"
 import useSound from 'use-sound'
 
@@ -27,7 +27,7 @@ const animationGenertators = {
         `
     }
 }
-export default function Rep({ muted, number, nextRep }) {
+export default function Rep({ muted, paused, number, nextRep }) {
     // Get the exercise and index of the last stage
     const exercise = useContext(Exercise);
     const lastStageIndex = exercise.stages.length - 1;
@@ -47,6 +47,18 @@ export default function Rep({ muted, number, nextRep }) {
     // If it's the first render
     const [first, setFirst] = useState(true);
 
+    const intervalRef = useRef();
+
+    const clearIntervalRef = () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = undefined;
+    }
+    const halfSoundDelay = useRef()
+    const clearHalfSound = () => {
+        if (halfSoundDelay.current) clearInterval(halfSoundDelay.current);
+        halfSoundDelay.current = undefined;
+    }
+
     // If the stage is finished
     const stageFinished = !remaining;
     // Go onto the next stage if finished, otherwise set the interal for the current stage
@@ -65,19 +77,39 @@ export default function Rep({ muted, number, nextRep }) {
                 setEnding(Date.now() + duration);
                 setRemaining(duration);
                 // Play the half sound in the middle of this stage
-                setTimeout(() => playHalf(), duration / 2);
+                // todo - add sound pausing/resuming
+                clearHalfSound();
+                halfSoundDelay.current = setTimeout(() => playHalf(), duration / 2);
 
                 return newStage;
             });
-            return;
+            return clearIntervalRef();
         }
         // Decrement the remaining until it's down to 0
-        const interval = setInterval(() =>
+        intervalRef.current = setInterval(() =>
             setRemaining(remaining => Math.max(0, ending - Date.now())),
             10);
 
-        return () => clearInterval(interval);
+        return clearIntervalRef;
     }, [stageIndex, stageFinished]);
+
+    useEffect(() => {
+        if (first) return;
+        if (paused) {
+            clearHalfSound();
+            return clearIntervalRef();
+        }
+        else {
+            const newEnding = Date.now() + remaining;
+            setEnding(newEnding);
+            intervalRef.current = setInterval(() =>
+                setRemaining(remaining => Math.max(0, newEnding - Date.now())),
+                10);
+            const halfRemaining = Math.max(0, stage.duration - remaining)
+            clearHalfSound();
+            halfSoundDelay.current = setTimeout(() => playHalf(), halfRemaining);
+        }
+    }, [paused]);
 
     // Length of a single rep, function to generate animation keyframes, and generated keyframes
     const repDuration = exercise.stages.reduce((ttl, stage) => ttl + stage.duration, 0);
@@ -95,6 +127,7 @@ export default function Rep({ muted, number, nextRep }) {
                 id="exercise-bar"
                 css={`
                     animation: ${animationKeyframes} ${repDuration}ms ease-in-out infinite;
+                    animation-play-state: ${paused ? 'paused' : 'running'};
                 `}
             ></div>
             <div id="rep-bar" style={{
@@ -103,7 +136,8 @@ export default function Rep({ muted, number, nextRep }) {
                     animationTimingFunction: 'linear',
                     animationDuration: (repDuration * 5) + 'ms',
                     animationIterationCount: 'infinite',
-                    backgroundColor: stageIndex % 2 === 0 ? 'grey' : 'grey'
+                    backgroundColor: stageIndex % 2 === 0 ? 'grey' : 'grey',
+                    animationPlayState: paused ? 'paused' : 'running'
                 } : {})
             }}></div>
         </React.Fragment>

@@ -7,7 +7,7 @@ import Exercise from './exercise.js';
 
 const SET_TOTAL = 5
 
-export default function Lift({ muted, nextLift }) {
+export default function Lift({ muted, paused, nextLift }) {
     // Get stages of exercise for animation calculation
     const { stages } = useContext(Exercise);
     // Keep track of the current set number
@@ -41,7 +41,7 @@ export default function Lift({ muted, nextLift }) {
                 </Paper>
             </form>
         </React.Fragment>
-        : <Set muted={muted} number={set} nextSet={() => setSet(set + 1)} />
+        : <Set muted={muted} paused={paused} number={set} nextSet={() => setSet(set + 1)} />
 
     // Full length of the set bar animation - the length of all the stages, times the number of reps, plus the
     // length of the delay, times the number of sets
@@ -53,7 +53,8 @@ export default function Lift({ muted, nextLift }) {
                 ...(animating ? {
                     animationName: 'fill',
                     animationTimingFunction: 'linear',
-                    animationDuration: totalLength + 'ms'
+                    animationDuration: totalLength + 'ms',
+                    animationPlayState: paused ? 'paused' : 'running'
                 } : {})
             }}></div>
         </React.Fragment>
