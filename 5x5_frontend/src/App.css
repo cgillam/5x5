@@ -125,6 +125,8 @@ body, html {
 
 .MuiTextField-root.white-input > label, .MuiTextField-root.white-input input {
   color: white !important;
+  background-color: rgba(25, 25, 25, 0.5);
+  border-radius: 1em;
 }
 
 .MuiPaper-root.black-paper {

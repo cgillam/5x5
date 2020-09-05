@@ -9,8 +9,8 @@ passport.use("login", new LocalStrategy({
     passwordField: 'password'
 }, async (userName, Password, done) => {
     try {
-        // Find user by username
-        const user = await User.findByUserName(userName)
+        // Find user by username or email
+        const user = await User.findByUserName(userName) || await User.findByEmail(userName)
         // If it does not exist, return false
         if (!user) return done(null, false)
         // If it does exist and the password matches, return the user
@@ -59,15 +59,15 @@ exports.logOut = (req, res) => {
 // Attempt to sign user up
 exports.signUp = async (req, res, next) => {
     const {
-        userName, password
+        userName, password, age, gender, conversion, email
     } = req.body
 
     // Return 409 if there is already a user with the same username
-    const existingUser = await User.findByUserName(userName)
-    if (existingUser) return res.status(409).send("userName already exists");
+    const existingUser = await User.findByUserName(userName) || await User.findByEmail(email);
+    if (existingUser) return res.status(409).send("user already exists");
 
     // Create the user and set the password
-    const user = await new User({ userName }).setPassWord(password);
+    const user = await new User({ userName, age, conversion, gender, email }).setPassWord(password);
     await user.save()
 
     // Log client in as newly created user

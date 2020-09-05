@@ -72,7 +72,7 @@ exports.next = async (req, res) => {
             break;
         }
         if (!lastWorkout) return null;
-        return lastWorkout.weights[i] + 2.5;
+        return lastWorkout.weights[i] + 5;
     });
 
     return res.json({

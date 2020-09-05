@@ -4,5 +4,10 @@ import React from 'react'
 export default React.createContext({
     _id: -1,
     userName: "default",
-    setUser: (newUser) => { }
+    age: 1,
+    email: 'email',
+    conversion: 'lb',
+    setUser: (newUser) => { },
+    toUserWeight: (lb) => { },
+    fromUserWeight: (weight) => { }
 })

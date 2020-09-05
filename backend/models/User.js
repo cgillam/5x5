@@ -11,12 +11,34 @@ const userSchema = new mongoose.Schema({
     passWord: {
         type: String,
         required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    gender: {
+        type: String,
+        required: true,
+    },
+    conversion: {
+        type: String,
+        required: true
+    },
+    age: {
+        type: Number,
+        required: true
     }
 })
 
 // Find a user by username - case insensitive
 userSchema.statics.findByUserName = function (userName) {
     return this.findOne({ userName: { $regex: userName, $options: "i" } })
+}
+
+// Find a user by username - case insensitive
+userSchema.statics.findByEmail = function (email) {
+    return this.findOne({ email: { $regex: email, $options: "i" } })
 }
 
 // Set the password of the current user - chainable

@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Button, TextField, Dialog, Paper, Grid } from '@material-ui/core'
 
 import Lift from './Lift.js';
 import Exercise from './exercise.js';
+import UserContext from './user.js';
 import { Delay } from './helper.js';
 
 
 const DEFAULT_WEIGHT = 145;
 
 export default function Tracker({ planId, exercises, muted, setMuted }) {
+    const { toUserWeight, fromUserWeight } = useContext(UserContext);
     // If the track is started
     const [started, setStarted] = useState(false);
     // If showing help image
@@ -26,14 +28,14 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
     const [comments, setComments] = useState([]);
 
     // Weight of form, and final user weight
-    const [formWeight, setFormWeight] = useState(DEFAULT_WEIGHT);
+    const [formWeight, setFormWeight] = useState(toUserWeight(DEFAULT_WEIGHT));
     const [weight, setWeight] = useState();
 
     useEffect(() => {
         if (exercise) {
             // Set the form weight to the suggested weight of default weight
-            if (!exercise.weight) setFormWeight(DEFAULT_WEIGHT)
-            else setFormWeight(exercise.weight);
+            if (!exercise.weight) setFormWeight(toUserWeight(DEFAULT_WEIGHT))
+            else setFormWeight(toUserWeight(exercise.weight));
             return;
         }
         // Don't submit if there are no exercises
@@ -57,6 +59,7 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
     if (!exercise) return <h1>All exercises completed</h1>
 
     // If user has submitted weight, display lift, otherwise display form
+    console.log(weight);
     const content = (weight
         ? <div style={{ flex: '2' }}>
             <Lift muted={muted} nextLift={async (comment) => {
@@ -78,7 +81,7 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
         </div>
         : <form onSubmit={(e) => {
             e.preventDefault()
-            setWeight(formWeight);
+            setWeight(fromUserWeight(formWeight));
         }} style={{
             flex: '2'
         }}>

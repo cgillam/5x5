@@ -15,6 +15,9 @@ const theme = createMuiTheme({
   palette: {
     primary: {
       main: '#FF0000',
+    },
+    secondary: {
+      main: '#FF0000',
     }
   },
 });
@@ -57,7 +60,13 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <User.Provider value={{ ...user, setUser }} >
+      <User.Provider value={{
+        ...user, setUser, toUserWeight: lb => {
+          return user.conversion === 'lb' ? lb : lb / 2.205;
+        }, fromUserWeight: weight => {
+          return user.conversion === 'lb' ? weight : weight * 2.205;
+        }
+      }} >
         <TabContext value={tab}>
           <TabList onChange={(_, newTab) => setTab(newTab)} centered variant="fullWidth">
             <Tab label="Home" value="home" />

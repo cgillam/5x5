@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from "react"
-import { Button, TextField, Paper, Box, Grid, Dialog, DialogTitle } from '@material-ui/core'
+import { Button, TextField, Paper, Box, Grid, Dialog, DialogTitle, Link, FormControl, FormControlLabel, RadioGroup, FormLabel, Radio } from '@material-ui/core'
 
 import UserContext from './user.js'
 import FeaturesImage from './gif 1.gif'
@@ -9,6 +9,13 @@ export default function Authenticate() {
     // Get user ID and setUser
     const { _id, setUser } = useContext(UserContext)
     const [intro, setIntro] = useState(false);
+    const [action, setAction] = useState("Login");
+    const otherAction = action === "Login"
+        ? "Signup"
+        : "Login"
+
+    const [conversion, setConversion] = useState("lb");
+    const [gender, setGender] = useState("male");
 
     // Reference to form, to easly create formdata object
     const formRef = useRef(null)
@@ -19,7 +26,10 @@ export default function Authenticate() {
             onClick={() => {
                 // Log the current user out
                 fetch("/api/user/logout", { credentials: 'include' })
-                    .then((res) => setUser({}))
+                    .then((res) => {
+                        setUser({})
+                        setAction('Login')
+                    })
             }}
             style={{
                 position: 'fixed',
@@ -30,18 +40,21 @@ export default function Authenticate() {
     );
 
     // Handle form submission - both for login and signup
-    const submitForm = (login) => fetch(`/api/user/${login ? "login" : "signup"}`, {
-        method: 'post',
-        body: new FormData(formRef.current),
-        credentials: "include"
-    }).then(res => {
-        // Return parsed user object if successful
-        if (res.ok) return res.json()
+    const submitForm = () => {
+        const data = new FormData(formRef.current);
+        return fetch(`/api/user/${action.toLowerCase()}`, {
+            method: 'post',
+            body: data,
+            credentials: "include"
+        }).then(res => {
+            // Return parsed user object if successful
+            if (res.ok) return res.json()
 
-        // Display text of non-OK response
-        res.text().then((text) => alert(text));
-        return {}
-    }).then(currUser => setUser(currUser))
+            // Display text of non-OK response
+            res.text().then((text) => alert(text));
+            return {}
+        }).then(currUser => setUser(currUser))
+    }
 
     return (
         <Grid container justify="center" style={{ minHeight: '75vh' }}>
@@ -50,17 +63,39 @@ export default function Authenticate() {
                     ref={formRef}
                     onSubmit={(e) => {
                         e.preventDefault()
-                        submitForm(true);
+                        submitForm();
                     }}
                     style={{
                         display: 'grid',
-                        gridTemplateColumns: 'auto auto'
+                        gridTemplateColumns: 'auto auto',
+                        gridGap: '1em'
                     }}
                 >
-                    <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Username" name="userName" />
-                    <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" type="password" label="Password" name="password" />
-                    <Button variant="outlined" color="primary" style={{ color: 'white' }} classes={{ label: 'left-label' }} type="submit" name="action" value="login">Login</Button>
-                    <Button onClick={() => submitForm(false)} variant="outlined" color="primary" style={{ color: 'white' }} classes={{ label: 'left-label' }} name="action" value="signup">Sign Up</Button>
+                    <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label={action === 'Signup' ? 'Email' : 'Username/Email'} name={action === 'Signup' ? 'email' : 'userName'} />
+                    {action === 'Signup'
+                        ? <>
+                            <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Username" name="userName" />
+                            <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Age" name="age" type="number" min="10" max="100" />
+                            <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" type="password" label="Password" name="password" />
+                            <FormControl component="fieldset" style={{ color: 'white', backgroundColor: 'rgba(25, 25, 25, 0.5)', borderRadius: '1em' }}>
+                                <RadioGroup aria-label="conversion" name="conversion" value={conversion} onChange={(e) => setConversion(e.target.value)}>
+                                    <FormControlLabel value="kg" control={<Radio />} label="Kilograms" />
+                                    <FormControlLabel value="lb" control={<Radio />} label="Pounds" />
+                                </RadioGroup>
+                            </FormControl>
+                            <FormControl component="fieldset" style={{ color: 'white', backgroundColor: 'rgba(25, 25, 25, 0.5)', borderRadius: '1em' }}>
+                                <RadioGroup aria-label="gender" name="gender" value={gender} onChange={(e) => setGender(e.target.value)}>
+                                    <FormControlLabel value="male" control={<Radio />} label="Male" />
+                                    <FormControlLabel value="female" control={<Radio />} label="Female" />
+                                </RadioGroup>
+                            </FormControl>
+                        </>
+                        : <>
+                            <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" type="password" label="Password" name="password" />
+                        </>
+                    }
+                    <Button variant="outlined" color="primary" style={{ color: 'white' }} classes={{ label: 'left-label' }} type="submit">{action}</Button>
+                    <Link onClick={() => setAction(otherAction)} style={{ textAlign: 'center', color: 'red', cursor: 'pointer' }}>Go to {otherAction}</Link>
                     <Button onClick={() => setIntro(true)} variant="outlined" color="primary" style={{ color: 'white', gridColumn: '1/3' }} >Introduction</Button>
                     <Dialog
                         open={intro}

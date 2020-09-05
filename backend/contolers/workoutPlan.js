@@ -75,7 +75,6 @@ exports.create = async (req, res) => {
 
     // Create the new plan
     let rawPlan = await new WorkoutPlan({ author: req.user._id, exerciseSlots }).save();
-    // Populate the plan exercise slots
     rawPlan = await rawPlan.populate({ path: 'exerciseSlots', model: "Exercise" }).execPopulate();
     res.json({ plan: rawPlan })
 }

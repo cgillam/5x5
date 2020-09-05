@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, Paper, Table, TableBody, TableHead, TableCell, TableRow, TableContainer, Tooltip } from '@material-ui/core'
 
+import UserContext from './user.js';
 import { chunkify } from './helper'
 
 
@@ -9,6 +10,7 @@ const indexToChar = i => String.fromCharCode(65 + i);
 
 // Individual table for each workout plan instance
 const WorkoutPlan = ({ plan, workouts, longestSlot }) => {
+    const { toUserWeight } = useContext(UserContext);
     // ID of currently hovered comment
     const [hovering, setHovering] = useState();
     // Array of indexes up until the longest slot
@@ -32,7 +34,7 @@ const WorkoutPlan = ({ plan, workouts, longestSlot }) => {
                         <TableRow key={i}>
                             {idxArr.map(j => {
                                 // Set weight text to the text weight if there was a workout, otherwise blank
-                                const text = workouts[j] ? workouts[j].weights[i] : ' ';
+                                const text = workouts[j] ? toUserWeight(workouts[j].weights[i]).toFixed(1) : ' ';
                                 // Set content to the current weight text if there's no comment, otherwise
                                 // set to a tooltip with the comment in it
                                 const content = workouts[j]
