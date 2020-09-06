@@ -5,5 +5,6 @@ const path = require("path")
 const ROOT = path.join(__dirname, "..")
 const FRONTEND = path.join(ROOT, "5x5_frontend")
 const FRONTEND_STATIC = path.join(FRONTEND, "build")
+const ENV = path.join(ROOT, ".env")
 
-module.exports = { ROOT, FRONTEND, FRONTEND_STATIC }
+module.exports = { ROOT, FRONTEND, FRONTEND_STATIC, ENV };

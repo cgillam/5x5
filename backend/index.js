@@ -12,13 +12,14 @@ const morgan = require('morgan')
 const path = require('path')
 const CONSTANCE = require('./constance.js')
 // load enviroment variables from ../.env
-require("dotenv").config({ path: path.join(CONSTANCE.ROOT, ".env") })
+require("dotenv").config({ path: CONSTANCE.ENV })
 
 // Get port or default as 5050
 const PORT = process.env.PORT || 5050
 // Get secret or default as abcdef
 const SECRET = process.env.SECRET || 'abcdef'
 const connectToDataBase = require("./models/index.js")
+const { getMailOptions, getMailTransport } = require("./contolers/User")
 const rout = require("./routs/index.js")
 
 const app = express()
@@ -58,10 +59,15 @@ app.get("*", (req, res) => {
 })
 
 // Listen to server and connect to database
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`listening http://localhost:${PORT}`)
     connectToDataBase().then(
         () => console.log("Database connection established"),
         (...errs) => console.error('Database connection error:', ...errs)
-    )
+    );
+
+    getMailTransport(await getMailOptions()).verify().then(
+        () => console.log("Mail connection established"),
+        (...errs) => console.error('Mail connection error:', ...errs)
+    );
 })

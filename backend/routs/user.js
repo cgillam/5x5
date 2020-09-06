@@ -12,5 +12,6 @@ router.post("/login", user.login)
 router.post("/signup", user.signUp)
 // Logout from a user
 router.get("/logout", user.logOut)
+router.get("/verify", user.verify)
 
 module.exports = router

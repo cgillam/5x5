@@ -32,7 +32,11 @@ export default function Authenticate() {
             credentials: "include"
         }).then(res => {
             // Return parsed user object if successful
-            if (res.ok) return res.json()
+            const cpy = res.clone();
+            if (res.ok) return res.json().catch(() => cpy.text().then(text => {
+                alert(text);
+                return {};
+            }));
 
             // Display text of non-OK response
             res.text().then((text) => alert(text));
@@ -73,6 +77,8 @@ export default function Authenticate() {
                                     <FormControlLabel value="female" control={<Radio />} label="Female" />
                                 </RadioGroup>
                             </FormControl>
+                            <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Referal code" name="referalCode" />
+                            <br />
                         </>
                         : <>
                             <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" type="password" label="Password" name="password" />

@@ -28,6 +28,20 @@ const userSchema = new mongoose.Schema({
     age: {
         type: Number,
         required: true
+    },
+    verification: {
+        type: {
+            code: {
+                type: String,
+                required: true
+            },
+            verified: Number
+        },
+        required: true
+    },
+    referalCode: {
+        type: String,
+        required: true
     }
 })
 

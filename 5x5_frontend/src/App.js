@@ -9,6 +9,7 @@ import Authenticate from './authenticate.js'
 import Tracker from './Tracker.js'
 import HistoryTable from './HistoryTable.js'
 import Plans from './Plans.js'
+import Verify from "./Verify.js"
 
 
 const theme = createMuiTheme({
@@ -25,7 +26,11 @@ const theme = createMuiTheme({
 
 function App() {
   // Keep track of the currently selected tab
-  const [tab, setTab] = useState('home');
+  const [tab, setTab] = useState(
+    window.location.pathname === "/verify"
+      ? "verify"
+      : 'home'
+  );
   // Sound mute state
   const [muted, setMuted] = useState(false);
 
@@ -78,10 +83,15 @@ function App() {
             <Tab label="Home" value="home" />
             <Tab label="Workout Plans" value="plans" />
             <Tab label="History" value="history" />
-            {user._id ? <Tab label="Logout" value="logout" /> : <></>}
+            {user._id ? <Tab label="Logout" value="logout" /> : []}
           </TabList>
 
-          <Authenticate />
+          {tab === "verify"
+            ? <TabPanel value="verify">
+              <Verify />
+            </TabPanel>
+            : <Authenticate />
+          }
 
           {user._id // Only show tab content when logged in
             ? <React.Fragment>
@@ -99,7 +109,7 @@ function App() {
           }
         </TabContext>
       </User.Provider>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 }
 
