@@ -42,7 +42,14 @@ const userSchema = new mongoose.Schema({
     referalCode: {
         type: String,
         required: true
+    },
+    visibility: {
+        type: String,
+        enum: ['public', "private", "friends"],
+        required: true
     }
+}, {
+    timestamps: { createdAt: true, updatedAt: false }
 })
 
 // Find a user by username - case insensitive
@@ -67,8 +74,15 @@ userSchema.methods.passWordMatches = function (passWord) {
 }
 
 // Strip sensitive data from the user object and return it
-userSchema.methods.toPublic = function () {
+userSchema.methods.toSelf = function () {
     const { passWord, ...user } = this.toJSON()
+
+    return user
+}
+
+// Strip sensitive data from the user object and return it
+userSchema.methods.toPublic = function () {
+    const { verification, email, visibility, referalCode, ...user } = this.toSelf()
 
     return user
 }

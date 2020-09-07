@@ -14,4 +14,6 @@ router.post("/signup", user.signUp)
 router.get("/logout", user.logOut)
 router.get("/verify", user.verify)
 
+router.post("/search", user.search)
+
 module.exports = router

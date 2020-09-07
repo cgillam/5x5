@@ -21,7 +21,8 @@ const { defaultPlan } = require("../models/default");
             code: 'jshdflsoausj',
             verified: new Date().setDate(new Date().getDate() - 1)
         },
-        referalCode: 'adsfasd'
+        referalCode: 'adsfasd',
+        visibility: 'public'
     }, {
         userName: 'jill',
         passWord: (await new User({}).setPassWord('pass')).passWord,
@@ -33,7 +34,8 @@ const { defaultPlan } = require("../models/default");
             code: 'jihgfedcba',
             verified: -1
         },
-        referalCode: '12345'
+        referalCode: '12345',
+        visibility: 'public'
     }, {
         userName: 'henry',
         passWord: (await new User({}).setPassWord('pass')).passWord,
@@ -45,7 +47,8 @@ const { defaultPlan } = require("../models/default");
             code: '1234567890',
             verified: new Date().setDate(new Date().getDate() - 500)
         },
-        referalCode: '54321'
+        referalCode: '54321',
+        visibility: 'private'
     }];
     await connectDB();
     await User.collection.drop().catch(() => undefined);

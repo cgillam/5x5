@@ -81,7 +81,7 @@ exports.login = (req, res, next) => passport.authenticate('login', (err, user, i
     req.login(user, (err) => {
         if (err) return next(err)
         // Return public user object via JSON
-        res.json(user.toPublic())
+        res.json(user.toSelf())
     })
 })(req, res, next);
 
@@ -113,13 +113,14 @@ exports.signUp = async (req, res, next) => {
                 ? -1
                 : false
         },
-        referalCode: randomString(5)
+        referalCode: randomString(5),
+        visibility: "public"
     }).setPassWord(password);
     await user.save()
 
     if (referdBy) return req.login(user, (err) => {
         if (err) return next(err)
-        res.json(user.toPublic())
+        res.json(user.toSelf())
     });
 
 
@@ -162,14 +163,28 @@ exports.verify = async (req, res, next) => {
 
     req.login(user, (err) => {
         if (err) return next(err)
-        res.json(user.toPublic())
+        res.json(user.toSelf())
     })
 }
 
 // Return the current user or 401
 exports.current = (req, res) => {
     if (req.user) {
-        return res.json(req.user.toPublic())
+        return res.json(req.user.toSelf())
     }
     res.status(401).end()
+}
+
+exports.search = async (req, res) => {
+    const { query } = req.body;
+
+    const users = await User.find({
+        visibility: 'public',
+        $or: [
+            { userName: { $regex: query, $options: "i" } },
+            { email: { $regex: query, $options: "i" } }
+        ]
+    });
+
+    res.json(users.map(user => user.toPublic()));
 }

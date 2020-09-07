@@ -10,6 +10,8 @@ import Tracker from './Tracker.js'
 import HistoryTable from './HistoryTable.js'
 import Plans from './Plans.js'
 import Verify from "./Verify.js"
+import Profile from "./Profile.js"
+import ProfileSearch from "./ProfileSearch.js"
 
 
 const theme = createMuiTheme({
@@ -73,17 +75,11 @@ function App() {
         }
       }} >
         <TabContext value={tab}>
-          <TabList onChange={(_, newTab) => {
-            if (newTab === 'logout') {
-              setUser({});
-              return fetch("/api/user/logout", { credentials: 'include' });
-            }
-            setTab(newTab)
-          }} centered variant="fullWidth">
+          <TabList onChange={(_, newTab) => setTab(newTab)} centered variant="fullWidth">
             <Tab label="Home" value="home" />
             <Tab label="Workout Plans" value="plans" />
             <Tab label="History" value="history" />
-            {user._id ? <Tab label="Logout" value="logout" /> : []}
+            {user._id ? <Tab label="Profile" value="profile" /> : []}
           </TabList>
 
           {tab === "verify"
@@ -103,6 +99,10 @@ function App() {
               </TabPanel>
               <TabPanel value="history">
                 <HistoryTable />
+              </TabPanel>
+              <TabPanel value="profile">
+                <ProfileSearch />
+                <Profile user={user} self={true} />
               </TabPanel>
             </React.Fragment>
             : null

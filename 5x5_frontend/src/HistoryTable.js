@@ -66,13 +66,16 @@ const WorkoutPlan = ({ plan, workouts, longestSlot }) => {
 }
 
 export default function HistoryTable() {
+    const [loading, setLoading] = useState(true)
     // History data
     const [history, setHistory] = useState([]);
     // Fetch history data on mount
     useEffect(() => {
         fetch('/api/workout/history')
             .then(r => r.json())
-            .then(({ workouts }) => setHistory(workouts));
+            .then(({ workouts }) => setHistory(workouts))
+            .catch(() => undefined)
+            .then(() => setLoading(false))
     }, [])
 
     // Convert list of workouts into planID to plan with workouts array mapping
@@ -90,6 +93,19 @@ export default function HistoryTable() {
 
     return (
         <React.Fragment>
+            {loading
+                ? <Paper
+                    style={{
+                        backgroundColor: 'darkgrey', padding: '0.5em', margin: '0.5em',
+                        boxShadow: '0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1)',
+                        width: 'max-content',
+                        margin: '0 auto'
+                    }}
+                >
+                    <h1>Loading...</h1>
+                </Paper>
+                : null
+            }
             {Array.from(planIds).map((planId) => {
                 const plan = planWorkOuts[planId];
                 // Get length of longest exercise slot
