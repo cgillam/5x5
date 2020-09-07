@@ -7,6 +7,8 @@ const { loggedIn } = require('./middlewares.js');
 
 // List all workout plans
 router.get("/list", workoutPlan.list)
+// List all public plans
+router.get("/list/public", workoutPlan.listPublic)
 // Create a new workout plan
 router.post("/create", loggedIn, workoutPlan.create)
 

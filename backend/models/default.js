@@ -37,14 +37,14 @@ const DefaultExersiserPlan = {
         }]
     ]
 };
-
+exports.defaultPlan = DefaultExersiserPlan
 
 // In-memory cache of default plan
 let defaultPlan;
 
 // Return the cached memory plan, or create/find all exercises, then create/find the workout plan,
 // then caches the plan
-module.exports = async () => {
+exports.getDefault = async () => {
     if (defaultPlan) return defaultPlan;
 
     for (const slot of DefaultExersiserPlan.exerciseSlots) {

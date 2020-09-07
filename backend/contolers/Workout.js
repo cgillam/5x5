@@ -1,7 +1,7 @@
 const Workout = require("../models/Workout")
 const WorkOutPlan = require("../models/workouPlan")
 
-const getDefaultWorkouPlan = require("../models/default")
+const { getDefault: getDefaultWorkouPlan } = require("../models/default")
 // Empty data to return for next endpoint
 const emptyNext = { planId: null, exercises: [], weights: [] }
 

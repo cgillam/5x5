@@ -12,7 +12,13 @@ body, html {
   flex-direction: column;
 }
 
+.MuiToggleButton-root{
+  border: 1px solid black !important;
+}
 
+.MuiToggleButton-label{
+  color: black;
+}
 
 @keyframes leave {
   0%   { transform: translateX(0%); }

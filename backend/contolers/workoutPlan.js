@@ -1,7 +1,7 @@
 const Workout = require("../models/Workout")
 const Exercise = require("../models/Exercise")
 const WorkoutPlan = require("../models/workouPlan")
-const getDefaultWorkouPlan = require("../models/default")
+const { getDefault: getDefaultWorkouPlan } = require("../models/default")
 
 
 // Get the default workout plan
@@ -26,7 +26,40 @@ exports.getByID = async (req, res) => {
 exports.list = async (req, res) => {
     const plans = await WorkoutPlan
         // Don't show deleted plans
-        .find({ deleted: { $exists: false } })
+        .find({
+            deleted: { $exists: false }, $or: [
+                { author: req.user._id },
+                { author: { $exists: false } }
+            ]
+        })
+        .populate({ path: 'exerciseSlots', model: "Exercise" })
+        // Populate the userName of all authors
+        .populate('author', 'userName');
+
+    // TODO - filter out default old plan
+
+    res.json({
+        plans: plans.map((plan) => {
+            const objPlan = plan.toJSON();
+            // Delete all the exercise images to save bandwidth
+            objPlan.exerciseSlots.forEach(slot => slot.forEach(exercise => {
+                delete exercise.image;
+            }));
+            return objPlan;
+        })
+    })
+}
+
+exports.listPublic = async (req, res) => {
+    const plans = await WorkoutPlan
+        // Don't show deleted plans
+        .find({
+            deleted: { $exists: false },
+            $and: [
+                { author: { $ne: req.user._id } },
+                { author: { $exists: true } }
+            ]
+        })
         .populate({ path: 'exerciseSlots', model: "Exercise" })
         // Populate the userName of all authors
         .populate('author', 'userName');

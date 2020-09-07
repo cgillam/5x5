@@ -1,18 +1,26 @@
 import React, { useStage, useEffect, useState } from 'react';
 import { Button, Dialog, DialogTitle, ButtonGroup, Paper } from '@material-ui/core'
-
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
 import PlanForm from './PlanForm'
 
 
 const defaultPlan = { exerciseSlots: [[{ title: 'Exercise', buffer: 1000, stages: [{ action: 'Up', duration: 5000 }, { action: 'Down', duration: 5000 }] }]] }
 
 export default function Plans({ planID, setPlanID }) {
+    const [explore, setExplore] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [plans, setPlans] = useState([]);
+    const fetchPlans = () => setLoading(true) || setPlans([]) || fetch('/api/plans/list' + (explore ? "/public" : ""))
+        .then(r => r.json())
+        .then(({ plans }) => setPlans(plans))
+        .catch(console.error)
+        .then(() => setLoading(false))
+
     useEffect(() => {
-        fetch('/api/plans/list')
-            .then(r => r.json())
-            .then(({ plans }) => setPlans(plans))
-            .catch(console.error)
+        fetchPlans();
+    }, [explore]);
+    useEffect(() => {
+        fetchPlans();
     }, []);
 
     // Data of new plan
@@ -35,6 +43,36 @@ export default function Plans({ planID, setPlanID }) {
     return (
         <React.Fragment>
             <ul style={{ listStyleType: 'none' }}>
+                <li>
+                    <Paper
+                        style={{
+                            backgroundColor: 'darkgrey', padding: '0.5em', margin: '0.5em',
+                            boxShadow: '0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1)',
+                            width: 'max-content',
+                            margin: '0 auto'
+                        }}
+                    >
+                        <ToggleButtonGroup exclusive value={explore} onChange={(_, newExplore) => setExplore(newExplore)}>
+                            <ToggleButton value={false}>Default</ToggleButton>
+                            <ToggleButton value={true}>Explore</ToggleButton>
+                        </ToggleButtonGroup>
+                    </Paper>
+                </li>
+                {loading
+                    ? <li>
+                        <Paper
+                            style={{
+                                backgroundColor: 'darkgrey', padding: '0.5em', margin: '0.5em',
+                                boxShadow: '0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1)',
+                                width: 'max-content',
+                                margin: '0 auto'
+                            }}
+                        >
+                            <h1>Loading...</h1>
+                        </Paper>
+                    </li>
+                    : null
+                }
                 {plans.map((plan) => {
                     // Get length of longest exercise slot
                     const longestSlot = plan.exerciseSlots.reduce((longest, slot) =>

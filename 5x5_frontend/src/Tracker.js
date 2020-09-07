@@ -131,13 +131,16 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
                             fullWidth={true}
                             maxWidth={'xs'}
                         >
-                            <img
-                                src={exercise.image.includes('data:image') // Add prefix only if not existing
-                                    ? exercise.image
-                                    : `data:image/gif;base64, ${exercise.image}`
-                                }
-                                style={{ width: '100%' }}
-                            />
+                            {exercise.image
+                                ? <img
+                                    src={exercise.image.includes('data:image') // Add prefix only if not existing
+                                        ? exercise.image
+                                        : `data:image/gif;base64, ${exercise.image}`
+                                    }
+                                    style={{ width: '100%' }}
+                                />
+                                : null
+                            }
                         </Dialog>
                         {exercise.image // Only show button if image exists
                             ? <Button onClick={() => setHelp(true)} style={{ zIndex: 15 }}>View Help</Button>
