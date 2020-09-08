@@ -1,7 +1,27 @@
-import React from "react"
+import React, { useContext, useEffect } from "react"
 import { Button, Dialog, Paper, Table, TableBody, TableHead, TableCell, TableRow, TableContainer } from '@material-ui/core'
+import { useLocation } from 'react-router-dom';
 
-export default function Profile({ user, self }) {
+import UserContext from './user';
+
+import Challenges from './Challenges'
+
+export default function Profile({ self, loggedUser }) {
+    const user = useContext(UserContext);
+
+    const location = useLocation();
+    const userName = location.pathname.split("/profile/")[1];
+    useEffect(() => {
+        if (userName === user.userName) return;
+        fetch("/api/user/" + (userName || "current"))
+            .then(r => r.json())
+            .then(payload => {
+                if (!userName) return user.setUser(payload);
+
+                if (payload.message) alert(payload.message)
+                if (payload.user) user.setUser(payload.user)
+            })
+    }, [userName])
     return (
         <React.Fragment>
             <Paper
@@ -62,13 +82,14 @@ export default function Profile({ user, self }) {
                 {self
                     ? <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Button onClick={() => {
-                            user.setUser({});
+                            loggedUser.setUser({});
                             return fetch("/api/user/logout", { credentials: 'include' });
                         }}>Logout</Button>
                     </div>
                     : <p>Friend/Challenge</p>
                 }
             </Paper>
+            <Challenges />
         </React.Fragment>
     )
 

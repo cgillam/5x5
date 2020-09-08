@@ -17,15 +17,15 @@ export default function Plans({ planID, setPlanID }) {
         .then(() => setLoading(false))
 
     useEffect(() => {
-        fetchPlans();
-    }, [explore]);
+        if (loading) return
+        fetchPlans()
+    }, [explore])
     useEffect(() => {
-        fetchPlans();
+        fetchPlans()
     }, []);
 
     // Data of new plan
     const [editingPlan, setEditingPlan] = useState(JSON.parse(JSON.stringify(defaultPlan)))
-
     const [editing, setEditing] = useState(false);
 
     // Reset editin data whenever plan ID updates

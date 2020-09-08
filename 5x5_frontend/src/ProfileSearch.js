@@ -1,20 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Paper, List, ListItem, ListItemText, Button, TextField, Fab } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search';
+import { Link } from 'react-router-dom'
 import Profile from "./Profile.js"
+import UserContext from './user'
 
 
 export default function ProfileSearch() {
+    const user = useContext(UserContext)
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState("");
-    const [users, setUsers] = useState([])
-    const [selected, selectUser] = useState();
+    const [users, setUsers] = useState([]);
 
     return (
         <span>
             <Fab
-                ariaLabel="SpeedDial tooltip example"
-                onClick={() => setOpen(!open)}
+                aria-label="Search"
+                onClick={() => {
+                    setOpen(!open)
+                    if (open) setQuery("") || setUsers([])
+                }}
                 style={{ position: 'absolute', right: '1em' }}
             >
                 <SearchIcon />
@@ -31,7 +36,6 @@ export default function ProfileSearch() {
                             }}
                         >
                             <form onSubmit={(e) => {
-                                console.log(e);
                                 e.preventDefault()
                                 const data = new FormData(e.target);
                                 return fetch(`/api/user/search`, {
@@ -44,17 +48,13 @@ export default function ProfileSearch() {
                                 <Button variant="outlined" color="primary" style={{ color: 'white' }} classes={{ label: 'left-label' }} type="submit">Search</Button>
                             </form>
                             <List>
-                                {users.map((user) =>
-                                    <ListItem button selected={selected && selected._id === user._id} key={user._id} onClick={() => selectUser(user)}>
-                                        <ListItemText>{user.userName}</ListItemText>
+                                {users.map((foundUser) =>
+                                    <ListItem button selected={user._id === foundUser._id} key={foundUser._id} component={Link} to={`/profile/${foundUser.userName}`}>
+                                        <ListItemText>{foundUser.userName}</ListItemText>
                                     </ListItem>
                                 )}
                             </List>
                         </Paper>
-                        {selected
-                            ? <Profile user={selected} self={false} />
-                            : null
-                        }
                     </span>
                     : null
             }

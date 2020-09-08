@@ -16,4 +16,6 @@ router.get("/verify", user.verify)
 
 router.post("/search", user.search)
 
+router.get("/:userName", user.get)
+
 module.exports = router

@@ -188,3 +188,16 @@ exports.search = async (req, res) => {
 
     res.json(users.map(user => user.toPublic()));
 }
+
+exports.get = async (req, res) => {
+    const { userName } = req.params
+    const user = await User.findByUserName(userName);
+    // we add the != public check to ensure private users cannot be directly found
+    if (!user || user.visibility !== 'public') return res.status(404).json({ message: "user not found" });
+
+    res.json({
+        user: user._id.equals(req.user._id)
+            ? user.toSelf()
+            : user.toPublic()
+    })
+}
