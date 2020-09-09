@@ -105,3 +105,22 @@ exports.history = async (req, res) => {
 
     return res.json({ workouts });
 }
+
+exports.nextSquatWeight = async (req, res) => {
+
+    const workouts = await Workout.find({
+        user: req.user._id
+    }).sort({ createdAt: -1 }).populate('exercises');
+    let weight;
+    try {
+        weight = workouts.map(w => w.exercises.map(({ title }, i) => ({
+            title,
+            createdAt: w.createdAt,
+            weight: w.weights[i],
+        }))).flat().filter(e => e.title === 'Squat')[0].weight;
+    } catch (e) {
+        weight = 100;
+    }
+
+    return res.json({ weight });
+}

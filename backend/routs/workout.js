@@ -11,6 +11,7 @@ router.get("/next", workout.next)
 router.post("/submit", loggedIn, workout.submit)
 // Get all the previous workouts for the current user
 router.get("/history", loggedIn, workout.history)
+router.get("/next-squat-weight", loggedIn, workout.nextSquatWeight)
 
 
 module.exports = router

@@ -10,6 +10,7 @@ router.get("/current", user.current)
 router.post("/login", user.login)
 // Signup as a user
 router.post("/signup", user.signUp)
+router.post("/update", user.update)
 // Logout from a user
 router.get("/logout", user.logOut)
 router.get("/verify", user.verify)

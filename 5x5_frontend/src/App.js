@@ -117,7 +117,7 @@ function App() {
                     ...generateWeightToggles(profileUser),
                     setUser: setProfileUser
                   }} >
-                    <ProfileSearch />
+                    <ProfileSearch loggedUser={fullUser} />
                     <User.Consumer>
                       {profileUser => <Profile self={user._id === profileUser._id} loggedUser={fullUser} />}
                     </User.Consumer>

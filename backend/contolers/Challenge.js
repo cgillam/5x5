@@ -6,7 +6,12 @@ const User = require("../models/User");
 
 exports.statuses = async (req, res) => {
     const messages = [];
-    const challenges = await Challenge.find({ 'participants.user': req.user._id }).populate('participants.user').populate('lost.user').populate('author')
+    const challenges = await Challenge.find({
+        $or: [
+            { 'participants.user': req.user._id },
+            { 'lost.user': req.user._id },
+        ]
+    }).populate('participants.user').populate('lost.user').populate('author')
 
     for (const challenge of challenges.filter(chall => chall.ended)) {
         messages.push({
@@ -15,30 +20,47 @@ exports.statuses = async (req, res) => {
         });
     }
 
+    const now = new Date();
+    for (const challenge of challenges.filter(chall => chall.ending <= now)) {
+        challenge.ended = new Date();
+        const winningNames = challenge.participants.map(part => part.user.userName).join(', ');
+        messages.push({
+            text: `${winningNames} won ${challenge.author.userName}'s challenge`,
+            when: challenge.ended.getTime()
+        });
+        await challenge.save();
+    }
+
+    const interval = 604800000;
+    const workoutsPerInterval = 3;
     for (const challenge of challenges.filter(chall => !chall.ended)) {
         let updated = false;
         for (const { user, joined } of [...challenge.participants]) {
-            const lastThree = await Workout.find({
+            const intervalsPast = Math.max(0, Math.floor((Date.now() - joined.getTime()) / interval) - 1);
+            const requiredCount = intervalsPast * workoutsPerInterval;
+
+            const workouts = await Workout.find({
                 user,
-                //createdAt: { $gt: joined }
-            }).sort({ createdAt: -1, }).limit(3);
-            if (!lastThree.length) {
-                // todo - n workouts every week...
-            }
-            else {
-                if (lastThree.length === 3) {
-                    const oldestWorkout = lastThree.slice(-1)[0];
-                    const weekAgo = new Date(Date.now() - 604800000);
-
-                    if (oldestWorkout < weekAgo) continue;
-                    // todo - handle workouts done before joined...
+                createdAt: { $gt: joined }
+            }).sort({ createdAt: -1, });
+            if (workouts.length >= requiredCount) {
+                let nextRollOver = new Date();
+                let futureRequired = 0;
+                let offset = 0;
+                while (++offset) {
+                    futureRequired = ((intervalsPast + offset) * workoutsPerInterval) - workouts.length;
+                    nextRollOver = new Date(joined.getTime() + (interval * (intervalsPast + 1 + offset)));
+                    if (futureRequired > 0) break;
                 }
-                else {
 
-                }
+                if (challenge.ending && challenge.ending < nextRollOver) nextRollOver = challenge.ending;
+                messages.push({
+                    text: `${user.userName} must perform ${futureRequired} workout${futureRequired > 1 ? 's' : ''} by ${nextRollOver.toLocaleString()} to stay in ${challenge.author.userName}'s challenge`,
+                    when: Date.now()
+                })
+                continue;
             }
-            if (true) continue;
-            console.log(user, 'lost', joined);
+
             updated = true;
 
             const loserIndex = challenge.participants.findIndex(participant => participant.user._id === user._id);
@@ -66,13 +88,16 @@ exports.statuses = async (req, res) => {
 }
 
 exports.create = async (req, res) => {
-    const { requests } = req.body
-
+    const { requests, ending: rawEnding } = req.body
+    const now = new Date();
+    let ending = rawEnding ? new Date(rawEnding) : undefined
+    if (ending < now.getTime()) ending = undefined;
     const challenge = await new Challenge({
         author: req.user,
         participants: [{ user: req.user, joined: new Date() }],
         requests: (await Promise.all(requests.map(un => User.findByUserName(un)))).filter(Boolean),
         lost: [],
+        ending
     })
     await challenge.save();
 
@@ -120,11 +145,7 @@ exports.quit = async (req, res) => {
     const participantIndex = challenge.participants.findIndex(participation => participation.user.equals(req.user._id));
     if (participantIndex === -1) return res.status(400).send('not participating in challenge');
 
-    console.log(participantIndex)
-    console.log(challenge.participants)
     challenge.participants = challenge.participants.filter((_, i) => i !== participantIndex);
-    console.log(challenge.participants)
-    console.log(participantIndex)
     await challenge.save();
 
     res.status(200).end();

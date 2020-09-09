@@ -6,6 +6,7 @@ const User = require("../models/User");
 const Exercise = require("../models/Exercise");
 const Workout = require("../models/Workout");
 const WorkoutPlan = require("../models/workouPlan");
+const Challange = require("../models/Challenge");
 
 const { defaultPlan } = require("../models/default");
 
@@ -183,6 +184,22 @@ const { defaultPlan } = require("../models/default");
         createdAt: new Date(new Date().setDate(new Date().getDate() - 1))
     }];
     workouts = await Workout.insertMany(workouts);
+
+    let started = new Date(new Date().setDate(new Date().getDate() - 3));
+    let challanges = [{
+        author: users[0]._id,
+        participants: [{
+            user: users[0]._id,
+            joined: started
+        }, {
+            user: users[1]._id,
+            joined: started
+        }, {
+            user: users[2]._id,
+            joined: new Date(new Date().setDate(new Date().getDate() - 1))
+        }]
+    }];
+    challanges = await Challange.insertMany(challanges)
 
     return require('mongoose').disconnect();
 })()

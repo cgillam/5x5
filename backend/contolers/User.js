@@ -7,6 +7,7 @@ const LocalStrategy = require("passport-local").Strategy
 const { ENV } = require("../constance")
 
 const User = require("../models/User")
+const Workout = require("../models/Workout")
 
 const getMailOptions = async () => {
     if (process.env.NODEMAILER_TRANSPORT) return JSON.parse(process.env.NODEMAILER_TRANSPORT)
@@ -95,7 +96,7 @@ exports.logOut = (req, res) => {
 // Attempt to sign user up
 exports.signUp = async (req, res, next) => {
     const {
-        userName, password, age, gender, conversion, email, referalCode
+        userName, password, age, gender, conversion, email, referalCode, visibility
     } = req.body
 
     // Return 409 if there is already a user with the same username
@@ -114,7 +115,7 @@ exports.signUp = async (req, res, next) => {
                 : false
         },
         referalCode: randomString(5),
-        visibility: "public"
+        visibility
     }).setPassWord(password);
     await user.save()
 
@@ -133,7 +134,7 @@ exports.signUp = async (req, res, next) => {
         from: `"${senderName}" <${senderEmail}>`,
         to: email,
         subject: "Account Verify",
-        text: `Click link to verify your account ${url}`,
+        text: `ClIdentifierick link to verify your account ${url}`,
         html: `<a href="${url}">Click to Verify</a>`
     });
     let message = "verification email sent"
@@ -145,6 +146,23 @@ exports.signUp = async (req, res, next) => {
     res.status(200).send(message);
 }
 
+// Attempt to sign user up
+exports.update = async (req, res, next) => {
+    const {
+        age, gender, conversion, visibility
+    } = req.body
+
+    const user = req.user;
+    console.log(user);
+    if (age) user.age = age;
+    if (gender) user.gender = gender;
+    if (conversion) user.conversion = conversion;
+    if (visibility) user.visibility = visibility;
+    console.log(user);
+    await user.save();
+
+    res.json(user.toSelf())
+}
 exports.verify = async (req, res, next) => {
     const { code } = req.query;
 
@@ -175,16 +193,53 @@ exports.current = (req, res) => {
     res.status(401).end()
 }
 
+const numbersInRange = (min, max) => [...Array(max - min + 1).keys()].map(i => i + min);
+
 exports.search = async (req, res) => {
-    const { query } = req.body;
+    const { query, queryType } = req.body;
 
     const users = await User.find({
         visibility: 'public',
-        $or: [
-            { userName: { $regex: query, $options: "i" } },
-            { email: { $regex: query, $options: "i" } }
-        ]
+        ...{
+            identifier: query => ({
+                $or: [
+                    { userName: { $regex: query, $options: "i" } },
+                    { email: { $regex: query, $options: "i" } }
+                ]
+            }),
+            age: query => {
+                const age = Number(query);
+                return {
+                    $and: [
+                        { age: { $gte: age - 5 } },
+                        { age: { $lte: age + 5 } }
+                    ]
+                }
+            },
+            weight: () => ({})
+        }[queryType](query)
     });
+
+    if (queryType === 'weight') {
+        const weight = Number(query);
+        for (const user of [...users]) {
+            const workouts = await Workout.find({
+                user
+            }).populate('exercises');
+            const weightedExercises = workouts.map(w => w.exercises.map(({ title }, i) => ({
+                title,
+                weight: w.weights[i]
+            }))).flat().filter(e => e.title === 'Squat');
+            const found = weightedExercises.some(squat => {
+                if (squat.weight < weight - 25) return false;
+                if (squat.weight > weight + 25) return false;
+                return true;
+            })
+            if (found) continue;
+            const userIndex = users.findIndex(loopUser => loopUser._id.equals(user._id));
+            users.splice(userIndex, 1);
+        }
+    }
 
     res.json(users.map(user => user.toPublic()));
 }

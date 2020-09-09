@@ -16,6 +16,7 @@ export default function Authenticate() {
 
     const [conversion, setConversion] = useState("lb");
     const [gender, setGender] = useState("male");
+    const [visibility, setVisibility] = useState("public");
 
     // Reference to form, to easly create formdata object
     const formRef = useRef(null)
@@ -78,7 +79,12 @@ export default function Authenticate() {
                                 </RadioGroup>
                             </FormControl>
                             <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Referal code" name="referalCode" />
-                            <br />
+                            <FormControl component="fieldset" style={{ color: 'white', backgroundColor: 'rgba(25, 25, 25, 0.5)', borderRadius: '1em' }}>
+                                <RadioGroup aria-label="visibility" name="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value)}>
+                                    <FormControlLabel value="public" control={<Radio />} label="Public" />
+                                    <FormControlLabel value="private" control={<Radio />} label="Private" />
+                                </RadioGroup>
+                            </FormControl>
                         </>
                         : <>
                             <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" type="password" label="Password" name="password" />

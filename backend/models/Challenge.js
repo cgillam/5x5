@@ -36,7 +36,8 @@ module.exports = mongoose.model('Challenge', new mongoose.Schema({
         }],
         required: true
     },
-    ended: Date
+    ended: Date,
+    ending: Date
 }, {
     timestamps: { createdAt: true, updatedAt: false }
 }));
