@@ -1,13 +1,7 @@
 import React from "react"
 import { Button, ButtonGroup, TextField, Paper } from '@material-ui/core'
 
-// Convert file to base64
-const fileToBase64 = file => new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-});
+import { fileToBase64 } from './helper'
 
 export default function PlanForm({ plan, setPlan, addPlan }) {
     const insertSlot = (i) => {

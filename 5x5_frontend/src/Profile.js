@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from "react"
-import { Button, Dialog, Paper, Table, TableBody, TableHead, TableCell, TableRow, TableContainer, FormControl, FormControlLabel, RadioGroup, FormLabel, Radio } from '@material-ui/core'
+import { Button, Dialog, Paper, Table, Avatar, TableBody, TableHead, TableCell, TableRow, TableContainer, FormControl, FormControlLabel, RadioGroup, FormLabel, Radio } from '@material-ui/core'
 import { useLocation } from 'react-router-dom';
 
 import UserContext from './user';
@@ -49,7 +49,7 @@ export default function Profile({ self, loggedUser }) {
     return (
         <React.Fragment>
             {challenges
-                ? <Challenges setChallenges={setChallenges} />
+                ? <Challenges setChallenges={setChallenges} loggedUser={loggedUser} />
                 : <Paper
                     style={{
                         backgroundColor: 'darkgrey', padding: '0.5em', margin: '0.5em',
@@ -59,6 +59,10 @@ export default function Profile({ self, loggedUser }) {
                     }}
                 >
                     <Button onClick={() => setChallenges(!challenges)}>{!challenges ? 'Show Challenges' : 'Hide Challenges'}</Button>
+                    {user.profileImage
+                        ? <Avatar alt={user.userName} src={user.profileImage} style={{ float: 'right' }} />
+                        : null
+                    }
                     <TableContainer style={{ width: 'unset', marginTop: '0.5em', marginBottom: '0.5em' }} component={Paper}>
                         <Table>
                             <TableBody>

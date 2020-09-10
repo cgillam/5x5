@@ -47,7 +47,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['public', "private", "friends"],
         required: true
-    }
+    },
+    profileImage: String
 }, {
     timestamps: { createdAt: true, updatedAt: false }
 })

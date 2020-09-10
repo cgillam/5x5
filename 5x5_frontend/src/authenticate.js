@@ -4,6 +4,7 @@ import { Button, TextField, Paper, Box, Grid, Dialog, DialogTitle, Link, FormCon
 import UserContext from './user.js'
 import FeaturesImage from './gif 1.gif'
 
+import { fileToBase64 } from './helper'
 
 export default function Authenticate() {
     // Get user ID and setUser
@@ -17,6 +18,7 @@ export default function Authenticate() {
     const [conversion, setConversion] = useState("lb");
     const [gender, setGender] = useState("male");
     const [visibility, setVisibility] = useState("public");
+    const [image, setImage] = useState(undefined);
 
     // Reference to form, to easly create formdata object
     const formRef = useRef(null)
@@ -25,8 +27,9 @@ export default function Authenticate() {
     if (_id) return null;
 
     // Handle form submission - both for login and signup
-    const submitForm = () => {
+    const submitForm = async () => {
         const data = new FormData(formRef.current);
+        data.set('profileImage', image ? await fileToBase64(image) : undefined);
         return fetch(`/api/user/${action.toLowerCase()}`, {
             method: 'post',
             body: data,
@@ -85,6 +88,11 @@ export default function Authenticate() {
                                     <FormControlLabel value="private" control={<Radio />} label="Private" />
                                 </RadioGroup>
                             </FormControl>
+                            <Button style={{ float: 'right', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} color="primary" variant="contained" component="label">
+                                Upload Profile Picture
+                                <input type="file" style={{ display: "none" }} onChange={(e) => setImage(e.target.files[0])} />
+                            </Button>
+                            <br />
                         </>
                         : <>
                             <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" type="password" label="Password" name="password" />

@@ -96,7 +96,7 @@ exports.logOut = (req, res) => {
 // Attempt to sign user up
 exports.signUp = async (req, res, next) => {
     const {
-        userName, password, age, gender, conversion, email, referalCode, visibility
+        userName, password, age, gender, conversion, email, referalCode, visibility, profileImage
     } = req.body
 
     // Return 409 if there is already a user with the same username
@@ -115,7 +115,8 @@ exports.signUp = async (req, res, next) => {
                 : false
         },
         referalCode: randomString(5),
-        visibility
+        visibility,
+        profileImage
     }).setPassWord(password);
     await user.save()
 

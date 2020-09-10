@@ -3,6 +3,8 @@ import { Tab, Button } from '@material-ui/core'
 import { TabContext, TabList, TabPanel } from '@material-ui/lab'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter, Link } from 'react-router-dom'
+import SwipableView from 'react-swipeable-views'
+
 
 import './App.css';
 import User from './user.js';
@@ -37,7 +39,8 @@ const generateWeightToggles = user => ({
 
 function App() {
   // Keep track of the currently selected tab
-  const [tab, setTab] = useState(window.location.pathname.split('/')[1] || 'home');
+  const tabs = ['home', 'plans', 'history', 'profile', 'verify']
+  const [tab, setTab] = useState(tabs.indexOf(window.location.pathname.split('/')[1] || 'home'));
   // Sound mute state
   const [muted, setMuted] = useState(false);
 
@@ -87,31 +90,40 @@ function App() {
         <BrowserRouter>
           <TabContext value={tab}>
             <TabList onChange={(_, newTab) => setTab(newTab)} centered variant="fullWidth">
-              <Tab label="Home" value="home" component={Link} to="/" />
-              <Tab label="Workout Plans" value="plans" component={Link} to="/plans" />
-              <Tab label="History" value="history" component={Link} to="/history" />
-              {user._id ? <Tab label="Profile" value="profile" component={Link} to="/profile" /> : []}
+              <Tab label="Home" value={0} component={Link} to="/" />
+              <Tab label="Workout Plans" value={1} component={Link} to="/plans" />
+              <Tab label="History" value={2} component={Link} to="/history" />
+              <Tab label="Profile" value={3} component={Link} to="/profile" />
             </TabList>
 
-            {tab === "verify"
-              ? <TabPanel value="verify">
+            {tab === 4
+              ? <TabPanel value={4}>
                 <Verify />
               </TabPanel>
               : <Authenticate />
             }
 
             {user._id // Only show tab content when logged in
-              ? <React.Fragment>
-                <TabPanel value="home">
+              ? <SwipableView
+                axis="x"
+                index={tab}
+                enableMouseEvents={true}
+                onChangeIndex={(index) => setTab(index)}
+                slideStyle={{
+                  height: '95vh',
+                  position: 'relative'
+                }}
+              >
+                <TabPanel value={0} index={0}>
                   <Tracker planId={planID} exercises={exercises} muted={muted} setMuted={setMuted} />
                 </TabPanel>
-                <TabPanel value="plans">
+                <TabPanel value={1} index={1}>
                   <Plans planID={planID} setPlanID={(id) => setPlanID(id)} />
                 </TabPanel>
-                <TabPanel value="history">
+                <TabPanel value={2} index={3}>
                   <HistoryTable />
                 </TabPanel>
-                <TabPanel value="profile">
+                <TabPanel value={3} index={4}>
                   <User.Provider value={{
                     ...profileUser,
                     ...generateWeightToggles(profileUser),
@@ -123,7 +135,7 @@ function App() {
                     </User.Consumer>
                   </User.Provider>
                 </TabPanel>
-              </React.Fragment>
+              </SwipableView>
               : null
             }
           </TabContext>

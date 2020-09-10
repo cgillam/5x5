@@ -10,7 +10,7 @@ import { Delay } from './helper.js';
 const DEFAULT_WEIGHT = 145;
 
 export default function Tracker({ planId, exercises, muted, setMuted }) {
-    const { toUserWeight, fromUserWeight } = useContext(UserContext);
+    const { userName, toUserWeight, fromUserWeight } = useContext(UserContext);
     // If the track is started
     const [started, setStarted] = useState(false);
     // If showing help image
@@ -28,6 +28,7 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
     // Weights and comments to send to server at end of workout
     const [weights, setWeights] = useState([]);
     const [comments, setComments] = useState([]);
+    const [image, setImage] = useState();
 
     // Weight of form, and final user weight
     const [formWeight, setFormWeight] = useState(toUserWeight(DEFAULT_WEIGHT));
@@ -52,7 +53,8 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
                 planid: planId,
                 exerciseIDs: exercises.map(exercise => exercise._id),
                 weights,
-                comments
+                comments,
+                image
             })
         });
     }, [exercise]);
@@ -63,7 +65,11 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
     // If user has submitted weight, display lift, otherwise display form
     const content = (weight
         ? <div style={{ flex: '2' }}>
-            <Lift muted={muted} paused={paused} nextLift={async (comment) => {
+            {userName === 'skipper'
+                ? <button onClick={() => setExerciseIndex(exercises.length - 1)}>Skip to last exercise</button>
+                : null
+            }
+            <Lift muted={muted} paused={paused} askImage={exerciseIndex === exercises.length - 1} nextLift={async (comment, image) => {
                 // Enter leaving animation for 1 second, entering for 1 second, and then normal state
                 setAnimating(3);
                 await Delay(1000);
@@ -74,6 +80,7 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
                 // Update weight and comment arrays
                 setWeights([...weights, weight]);
                 setComments([...comments, comment]);
+                setImage(image);
                 // Increment exercise
                 setExerciseIndex(exerciseIndex + 1);
                 // Unset user weight
@@ -132,13 +139,7 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
                             maxWidth={'xs'}
                         >
                             {exercise.image
-                                ? <img
-                                    src={exercise.image.includes('data:image') // Add prefix only if not existing
-                                        ? exercise.image
-                                        : `data:image/gif;base64, ${exercise.image}`
-                                    }
-                                    style={{ width: '100%' }}
-                                />
+                                ? <img src={exercise.image} style={{ width: '100%' }} />
                                 : null
                             }
                         </Dialog>

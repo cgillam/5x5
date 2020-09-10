@@ -14,6 +14,7 @@ exports.statuses = async (req, res) => {
     }).populate('participants.user').populate('lost.user').populate('author')
 
     for (const challenge of challenges.filter(chall => chall.ended)) {
+        // TODO - remove
         messages.push({
             text: `${challenge.participants[0].user.userName} won ${challenge.author.userName}'s challenge`,
             when: challenge.ended.getTime()
@@ -24,6 +25,7 @@ exports.statuses = async (req, res) => {
     for (const challenge of challenges.filter(chall => chall.ending <= now)) {
         challenge.ended = new Date();
         const winningNames = challenge.participants.map(part => part.user.userName).join(', ');
+        // TODO - remove
         messages.push({
             text: `${winningNames} won ${challenge.author.userName}'s challenge`,
             when: challenge.ended.getTime()
@@ -75,6 +77,7 @@ exports.statuses = async (req, res) => {
             updated = true;
 
             challenge.ended = new Date();
+            // TODO - remove
             messages.push({
                 text: `${challenge.participants[0].user.userName} won ${challenge.author.userName}'s challenge`,
                 when: challenge.ended.getTime()
@@ -104,6 +107,7 @@ exports.create = async (req, res) => {
     res.json(challenge);
 }
 
+
 exports.participating = async (req, res) => {
     const challenges = await Challenge.find({ 'participants.user': req.user._id, ended: { $exists: false } })
         .populate('author').populate('participants.user');
@@ -111,6 +115,18 @@ exports.participating = async (req, res) => {
     return res.json(challenges);
 }
 
+
+exports.completed = async (req, res) => {
+    const challenges = await Challenge.find({
+        $or: [
+            { 'participants.user': req.user._id },
+            { 'lost.user': req.user._id },
+        ],
+        ended: { $exists: true }
+    }).populate('participants.user').populate('lost.user').populate('author')
+
+    return res.json(challenges);
+}
 
 
 exports.requests = async (req, res) => {
@@ -149,4 +165,24 @@ exports.quit = async (req, res) => {
     await challenge.save();
 
     res.status(200).end();
+}
+
+exports.submitVideo = async (req, res) => {
+    const { id, video } = req.body;
+    //    require('fs').writeFileSync('./earth.mp4.b64', video);
+
+    const createdAt = new Date()
+    const challenge = await Challenge.findById(id).select('videos.video');
+    // TODO - don't lose old videos
+    challenge.videos = [...challenge.videos, { user: req.user._id, video, createdAt }]
+    await challenge.save()
+
+    return res.json({ user: req.user._id, video, createdAt: createdAt.getTime() });
+}
+exports.getVideos = async (req, res) => {
+    const { id } = req.query;
+
+    const challenge = await Challenge.findById(id).select('videos.video').select('videos.user')
+
+    return res.json(challenge.videos)
 }

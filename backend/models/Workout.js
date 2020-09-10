@@ -6,7 +6,7 @@ module.exports = mongoose.model('Workout', new mongoose.Schema({
         ref: 'User',
         required: true
     },
-
+    image: String,
     exercises: {
         type: [{
             type: mongoose.Types.ObjectId,

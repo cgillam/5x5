@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, Paper, Table, TableBody, TableHead, TableCell, TableRow, TableContainer, Tooltip } from '@material-ui/core'
+import { Link, Paper, Dialog, Table, TableBody, TableHead, TableCell, Button, TableRow, TableContainer, Tooltip } from '@material-ui/core'
+import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
 
 import UserContext from './user.js';
 import { chunkify } from './helper'
@@ -13,55 +14,80 @@ const WorkoutPlan = ({ plan, workouts, longestSlot }) => {
     const { toUserWeight } = useContext(UserContext);
     // ID of currently hovered comment
     const [hovering, setHovering] = useState();
+    const [image, setImage] = useState();
     // Array of indexes up until the longest slot
     const idxArr = [...Array(longestSlot).keys()]
 
     return (
-        <TableContainer style={{ width: 'unset', marginTop: '0.5em', marginBottom: '0.5em' }} component={Paper}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        {idxArr.map((i) => // Add headers for each of the exercise slots
-                            <React.Fragment key={i}>
-                                <TableCell classes={{ root: 'black-paper' }}>Exercise</TableCell>
-                                <TableCell classes={{ root: 'black-paper' }}>{workouts[i] ? new Date(workouts[i].createdAt).toDateString() : indexToChar(i)}</TableCell>
-                            </React.Fragment>
-                        )}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {[...Array(workouts[0].exercises.length).keys()].map(i =>
-                        <TableRow key={i}>
-                            {idxArr.map(j => {
-                                // Set weight text to the text weight if there was a workout, otherwise blank
-                                const text = workouts[j] ? toUserWeight(workouts[j].weights[i]).toFixed(1) : ' ';
-                                // Set content to the current weight text if there's no comment, otherwise
-                                // set to a tooltip with the comment in it
-                                const content = workouts[j]
-                                    ? workouts[j].comments[i]
-                                        ? <Tooltip
-                                            title={workouts[j].comments[i]}
-                                            onOpen={() => setHovering(`${i}.${j}`)}
-                                            onClose={() => setTimeout(() => setHovering(''), 250)}
-                                        >
-                                            {/* Display link if not hovereing, otherwise remove link and use span */}
-                                            {hovering === `${i}.${j}` ? <span>{text}</span> : <Link>{text}</Link>}
-                                        </Tooltip>
-                                        : text
-                                    : ''
-
-                                return (
-                                    <React.Fragment key={j}>
-                                        <TableCell classes={{ root: 'black-paper' }}>{plan.exerciseSlots[i][j % plan.exerciseSlots[i].length].title}</TableCell>
-                                        <TableCell classes={{ root: 'black-paper' }} align="center">{content}</TableCell>
-                                    </React.Fragment>
-                                )
-                            })}
+        <>
+            <Dialog
+                open={!!image}
+                onClose={() => setImage(undefined)}
+                scroll="body"
+                fullWidth={true}
+                maxWidth={'xs'}
+            >
+                <img src={image} style={{ width: '100%' }} />
+            </Dialog>
+            <TableContainer style={{ width: 'unset', marginTop: '0.5em', marginBottom: '0.5em' }} component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            {idxArr.map((i) => // Add headers for each of the exercise slots
+                                <React.Fragment key={i}>
+                                    <TableCell classes={{ root: 'black-paper' }}>Exercise</TableCell>
+                                    <TableCell classes={{ root: 'black-paper' }}>{workouts[i] ? new Date(workouts[i].createdAt).toDateString() : indexToChar(i)} Swlefie</TableCell>
+                                    <TableCell classes={{ root: 'black-paper' }}>Swellfie</TableCell>
+                                </React.Fragment>
+                            )}
                         </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                        {[...Array(workouts[0].exercises.length).keys()].map(i =>
+                            <TableRow key={i}>
+                                {idxArr.map(j => {
+                                    // Set weight text to the text weight if there was a workout, otherwise blank
+                                    const text = workouts[j] ? toUserWeight(workouts[j].weights[i]).toFixed(1) : ' ';
+                                    // Set content to the current weight text if there's no comment, otherwise
+                                    // set to a tooltip with the comment in it
+                                    const content = workouts[j]
+                                        ? workouts[j].comments[i]
+                                            ? <Tooltip
+                                                title={workouts[j].comments[i]}
+                                                onOpen={() => setHovering(`${i}.${j}`)}
+                                                onClose={() => setTimeout(() => setHovering(''), 250)}
+                                            >
+                                                {/* Display link if not hovereing, otherwise remove link and use span */}
+                                                {hovering === `${i}.${j}` ? <span>{text}</span> : <Link>{text}</Link>}
+                                            </Tooltip>
+                                            : text
+                                        : ''
+
+                                    const lastRow = i === workouts[0].exercises.length - 1;
+
+                                    return (
+                                        <React.Fragment key={j}>
+                                            <TableCell classes={{ root: 'black-paper' }}>{plan.exerciseSlots[i][j % plan.exerciseSlots[i].length].title}</TableCell>
+                                            <TableCell classes={{ root: 'black-paper' }} align="center">
+                                                {content}
+                                            </TableCell>
+                                            <TableCell classes={{ root: 'black-paper' }} align="center">
+                                                {lastRow
+                                                    ? workouts[j] && workouts[j].image
+                                                        ? <Button style={{ color: 'red' }} onClick={() => setImage(workouts[j].image)}>✓</Button>
+                                                        : <CancelOutlinedIcon />
+                                                    : ''
+                                                }
+                                            </TableCell>
+                                        </React.Fragment>
+                                    )
+                                })}
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </>
     )
 }
 

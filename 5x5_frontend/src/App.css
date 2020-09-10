@@ -149,3 +149,24 @@ body, html {
   box-shadow: 0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1);
   border-radius: 1em;
 }
+
+
+.fade-wait-leave {
+  opacity: 1;
+}
+.fade-wait-leave.fade-wait-leave-active {
+  opacity: 0;
+  transition: opacity 1s ease-in;
+}
+
+.fade-wait-enter {
+  opacity: 0;
+}
+.fade-wait-enter.fade-wait-enter-active {
+  opacity: 1;
+  transition: opacity 1s ease-in 1s;
+}
+
+.fade-wait-height {
+  transition: height 1s ease-in-out;
+}

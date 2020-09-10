@@ -85,9 +85,9 @@ exports.next = async (req, res) => {
 
 // Submit completed workout
 exports.submit = async (req, res) => {
-    const { planid, exerciseIDs, weights, comments } = req.body;
+    const { planid, exerciseIDs, weights, comments, image } = req.body;
 
-    await new Workout({ user: req.user, plan: planid, exercises: exerciseIDs, weights, comments }).save()
+    await new Workout({ user: req.user, plan: planid, exercises: exerciseIDs, weights, comments, image }).save()
 
     return res.status(200).end();
 }

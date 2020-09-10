@@ -36,6 +36,20 @@ module.exports = mongoose.model('Challenge', new mongoose.Schema({
         }],
         required: true
     },
+    videos: {
+        type: [{
+            _id: false,
+            user: {
+                type: mongoose.Types.ObjectId,
+                ref: 'User',
+            },
+            video: {
+                type: String,
+                select: false
+            },
+            createdAt: Date
+        }]
+    },
     ended: Date,
     ending: Date
 }, {
