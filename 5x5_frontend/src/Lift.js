@@ -24,6 +24,7 @@ export default function Lift({ muted, paused, askImage, nextLift }) {
                 e.preventDefault();
 
                 const comment = e.target.elements["comment"].value.trim();
+                // If a image is requested and provided, obtain and parse it
                 let rawImage = undefined;
                 if (askImage) {
                     const imageInput = e.target.elements["image"]
@@ -45,7 +46,7 @@ export default function Lift({ muted, paused, askImage, nextLift }) {
                     padding: '1em'
                 }}>
                     <TextareaAutosize rowsMin={5} style={{ color: 'white', backgroundColor: 'black' }} classes={{ root: 'white-input' }} name="comment" placeholder="Comment" />
-                    {askImage
+                    {askImage // Show image upload button if requested
                         ? <Button style={{ float: 'right', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} color="primary" variant="contained" component="label">
                             Upload Swellfie
                             <input name="image" type="file" style={{ display: "none" }} />

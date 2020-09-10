@@ -25,7 +25,7 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
     const [exerciseIndex, setExerciseIndex] = useState(0);
     const exercise = exercises[exerciseIndex];
 
-    // Weights and comments to send to server at end of workout
+    // Weights, comments, and image to send to server at end of workout
     const [weights, setWeights] = useState([]);
     const [comments, setComments] = useState([]);
     const [image, setImage] = useState();
@@ -65,7 +65,7 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
     // If user has submitted weight, display lift, otherwise display form
     const content = (weight
         ? <div style={{ flex: '2' }}>
-            {userName === 'skipper'
+            {userName === 'skipper' // The user of "skipper" can skip to the last exercise
                 ? <button onClick={() => setExerciseIndex(exercises.length - 1)}>Skip to last exercise</button>
                 : null
             }
@@ -138,10 +138,7 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
                             fullWidth={true}
                             maxWidth={'xs'}
                         >
-                            {exercise.image
-                                ? <img src={exercise.image} style={{ width: '100%' }} />
-                                : null
-                            }
+                            <img src={exercise.image} style={{ width: '100%' }} />
                         </Dialog>
                         {exercise.image // Only show button if image exists
                             ? <Button onClick={() => setHelp(true)} style={{ zIndex: 15 }}>View Help</Button>

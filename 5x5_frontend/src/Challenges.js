@@ -4,20 +4,25 @@ import { Link, Button, Dialog, Paper, TextField, Table, TableBody, TableHead, Ta
 import { fileToBase64 } from './helper'
 
 export default function Challenges({ setChallenges, loggedUser }) {
+    // Form values
     const [requesting, setRequesting] = useState('jill');
     const [ending, setEnding] = useState('');
 
 
+    // challenge API data for challenge types and statuses
     const [participating, setParticipating] = useState([]);
     const [requests, setRequests] = useState([]);
     const [completed, setCompleted] = useState([]);
     const [statuses, setStatuses] = useState([]);
 
 
+    // Currently displayed video
     const [video, setVideo] = useState();
 
     useEffect(() => {
         (async () => {
+            // Ensure statuses is first, as other endpoints may be invalid
+            // if it's not
             await fetch('/api/challenge/statuses')
                 .then(r => r.json())
                 .then(challenges => setStatuses(challenges));
@@ -100,6 +105,7 @@ export default function Challenges({ setChallenges, loggedUser }) {
                                                 headers: { 'Content-Type': 'application/json' }
                                             }).then(r => r.json())
                                                 .then(challenge => {
+                                                    // Upon joining, move into participating list
                                                     setRequests(requests.filter(requestChallenge => requestChallenge._id !== challenge._id));
                                                     setParticipating([...participating, challenge])
                                                 })
@@ -118,6 +124,7 @@ export default function Challenges({ setChallenges, loggedUser }) {
                                                 body: JSON.stringify({ id: challenge._id }),
                                                 headers: { 'Content-Type': 'application/json' }
                                             }).then((r) => {
+                                                // Upon quitting, remove from participating
                                                 setParticipating(participating.filter(partChallenge => partChallenge._id !== challenge._id));
                                             })
                                         }}>Quit</Button>
@@ -129,11 +136,14 @@ export default function Challenges({ setChallenges, loggedUser }) {
                                     <TableCell>{challenge.author.userName}</TableCell>
                                     <TableCell>
                                         Winners: {challenge.participants.map((p, i) => {
+                                        // Add comma to front if it's not the first element
                                         const justText = <>
                                             {i > 0 && ", "}
                                             <span key={p.user._id} >{p.user.userName}</span>
                                         </>
+                                        // If the user has no video, return just the span
                                         if (!challenge.videoMap) return justText;
+                                        // Otherwise, return a link that opens the video
                                         return challenge.videoMap[p.user._id]
                                             ? <>
                                                 {i > 0 && ", "}
@@ -150,6 +160,7 @@ export default function Challenges({ setChallenges, loggedUser }) {
                                         <Button onClick={() => {
                                             fetch('/api/challenge/videos/get?id=' + challenge._id).then(r => r.json())
                                                 .then(videos => {
+                                                    // Build map of userID->videoData from array of userID, videoData objects
                                                     const challengeIndex = completed.findIndex(c => c._id === challenge._id);
                                                     const completedCopy = [...completed];
                                                     completedCopy.splice(challengeIndex, 1, {
@@ -159,7 +170,7 @@ export default function Challenges({ setChallenges, loggedUser }) {
                                                     setCompleted(completedCopy);
                                                 })
                                         }}>Prove a Point</Button>
-                                        {challenge.videoMap && !challenge.videoMap[loggedUser._id]
+                                        {challenge.videoMap && !challenge.videoMap[loggedUser._id] // If the video map is populated and the logged in user is not in it, show this button
                                             ? <Button style={{ float: 'right', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} color="primary" variant="contained" component="label">
                                                 Upload Swellfie
                                                 <input type="file" style={{ display: "none" }} onChange={async (e) => {
@@ -173,6 +184,7 @@ export default function Challenges({ setChallenges, loggedUser }) {
                                                         .then(videoData => {
                                                             const challengeIndex = completed.findIndex(c => c._id === challenge._id);
                                                             const completedCopy = [...completed];
+                                                            // Add video data to video map, creating if it doesn't exist
                                                             completedCopy.splice(challengeIndex, 1, {
                                                                 ...challenge,
                                                                 videoMap: {
@@ -194,7 +206,7 @@ export default function Challenges({ setChallenges, loggedUser }) {
                 </TableContainer>
                 <ul>
                     <li>Statuses</li>
-                    {statuses.map(({ text, when }) =>
+                    {statuses.map(({ text, when }) => // Combine when with text to avoid conflict when two messages have the same time - has happened on more then one occation
                         <li key={when + '_' + text}>
                             <p>{text} at {new Date(when).toLocaleString()}</p>
                         </li>

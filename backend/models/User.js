@@ -74,7 +74,7 @@ userSchema.methods.passWordMatches = function (passWord) {
     return bcrypt.compare(passWord, this.passWord)
 }
 
-// Strip sensitive data from the user object and return it
+// Strip password from the user object and return it
 userSchema.methods.toSelf = function () {
     const { passWord, ...user } = this.toJSON()
 

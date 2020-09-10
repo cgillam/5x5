@@ -15,6 +15,7 @@ export default function Authenticate() {
         ? "Signup"
         : "Login"
 
+    // Form values
     const [conversion, setConversion] = useState("lb");
     const [gender, setGender] = useState("male");
     const [visibility, setVisibility] = useState("public");
@@ -23,7 +24,7 @@ export default function Authenticate() {
     // Reference to form, to easly create formdata object
     const formRef = useRef(null)
 
-    // If logged in, only show logout button
+    // If logged in, show nothing
     if (_id) return null;
 
     // Handle form submission - both for login and signup
@@ -49,8 +50,15 @@ export default function Authenticate() {
     }
 
     return (
-        <Grid container justify="center" style={{ minHeight: '75vh' }}>
-            <Paper style={{ margin: 'auto', padding: '0.5em', backgroundColor: 'black' }} elevation={5} >
+        <Grid container justify="center" style={{ minHeight: '95vh', paddingTop: '1em', position: 'relative' }}>
+            <Paper style={{
+                margin: 'auto',
+                padding: '0.5em',
+                backgroundColor: '#000000',
+                minHeight: '60vh',
+                minWidth: '25vw',
+                borderRadius: '1em'
+            }} elevation={5} >
                 <form
                     ref={formRef}
                     onSubmit={(e) => {
@@ -58,49 +66,64 @@ export default function Authenticate() {
                         submitForm();
                     }}
                     style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'auto auto',
-                        gridGap: '1em'
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '2em',
+                        height: '100%',
+                        padding: '0 1em'
                     }}
                 >
-                    <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label={action === 'Signup' ? 'Email' : 'Username/Email'} name={action === 'Signup' ? 'email' : 'userName'} />
-                    {action === 'Signup'
+                    {action === 'Signup' // Show different components for signup/login
                         ? <>
-                            <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Username" name="userName" />
-                            <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Age" name="age" type="number" min="10" max="100" />
-                            <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" type="password" label="Password" name="password" />
-                            <FormControl component="fieldset" style={{ color: 'white', backgroundColor: 'rgba(25, 25, 25, 0.5)', borderRadius: '1em' }}>
-                                <RadioGroup aria-label="conversion" name="conversion" value={conversion} onChange={(e) => setConversion(e.target.value)}>
-                                    <FormControlLabel value="kg" control={<Radio />} label="Kilograms" />
-                                    <FormControlLabel value="lb" control={<Radio />} label="Pounds" />
-                                </RadioGroup>
-                            </FormControl>
-                            <FormControl component="fieldset" style={{ color: 'white', backgroundColor: 'rgba(25, 25, 25, 0.5)', borderRadius: '1em' }}>
-                                <RadioGroup aria-label="gender" name="gender" value={gender} onChange={(e) => setGender(e.target.value)}>
-                                    <FormControlLabel value="male" control={<Radio />} label="Male" />
-                                    <FormControlLabel value="female" control={<Radio />} label="Female" />
-                                </RadioGroup>
-                            </FormControl>
-                            <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Referal code" name="referalCode" />
-                            <FormControl component="fieldset" style={{ color: 'white', backgroundColor: 'rgba(25, 25, 25, 0.5)', borderRadius: '1em' }}>
-                                <RadioGroup aria-label="visibility" name="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value)}>
-                                    <FormControlLabel value="public" control={<Radio />} label="Public" />
-                                    <FormControlLabel value="private" control={<Radio />} label="Private" />
-                                </RadioGroup>
-                            </FormControl>
-                            <Button style={{ float: 'right', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} color="primary" variant="contained" component="label">
-                                Upload Profile Picture
-                                <input type="file" style={{ display: "none" }} onChange={(e) => setImage(e.target.files[0])} />
-                            </Button>
-                            <br />
+                            <h4 style={{ color: '#ffffff', fontSize: '18pt', marginBottom: '0' }}>Sign Up</h4>
+                            <span style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'auto auto',
+                                gap: '1em'
+                            }}>
+                                <TextField style={{ color: '#ffffff' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Email" name="email" />
+                                <TextField style={{ color: '#ffffff' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Username" name="userName" />
+                                <TextField style={{ color: '#ffffff' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Age" name="age" type="number" min="10" max="100" />
+                                <TextField style={{ color: '#ffffff' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" type="password" label="Password" name="password" />
+                                <FormControl component="fieldset" style={{ color: '#ffffff', backgroundColor: '#2e2e2e', borderRadius: '0.5em', padding: '0.5em' }}>
+                                    <RadioGroup aria-label="conversion" name="conversion" value={conversion} onChange={(e) => setConversion(e.target.value)}>
+                                        <FormControlLabel value="kg" control={<Radio />} label="Kilograms" />
+                                        <FormControlLabel value="lb" control={<Radio />} label="Pounds" />
+                                    </RadioGroup>
+                                </FormControl>
+                                <FormControl component="fieldset" style={{ color: '#ffffff', backgroundColor: '#2e2e2e', borderRadius: '0.5em', padding: '0.5em' }}>
+                                    <RadioGroup aria-label="gender" name="gender" value={gender} onChange={(e) => setGender(e.target.value)}>
+                                        <FormControlLabel value="male" control={<Radio />} label="Male" />
+                                        <FormControlLabel value="female" control={<Radio />} label="Female" />
+                                    </RadioGroup>
+                                </FormControl>
+                                <FormControl component="fieldset" style={{ color: '#ffffff', backgroundColor: '#2e2e2e', borderRadius: '0.5em', padding: '0.5em' }}>
+                                    <RadioGroup aria-label="visibility" name="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value)}>
+                                        <FormControlLabel value="public" control={<Radio />} label="Public" />
+                                        <FormControlLabel value="private" control={<Radio />} label="Private" />
+                                    </RadioGroup>
+                                </FormControl>
+                                <TextField style={{ color: '#ffffff' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Referal code" name="referalCode" />
+                                <Button style={{ float: 'right', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)' }} color="primary" variant="contained" component="label">
+                                    Upload Profile Picture
+                                    <input type="file" style={{ display: "none" }} onChange={(e) => setImage(e.target.files[0])} />
+                                </Button>
+                                <br />
+                            </span>
                         </>
                         : <>
-                            <TextField style={{ color: 'white' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" type="password" label="Password" name="password" />
+                            <h4>&nbsp;</h4>
+                            <TextField style={{ color: '#ffffff' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" label="Username/Email" name="userName" />
+                            <TextField style={{ color: '#ffffff' }} classes={{ root: 'white-input' }} variant="outlined" color="primary" type="password" label="Password" name="password" />
                         </>
                     }
-                    <Button variant="outlined" color="primary" style={{ color: 'white' }} classes={{ label: 'left-label' }} type="submit">{action}</Button>
-                    <Link onClick={() => setAction(otherAction)} style={{ textAlign: 'center', color: 'red', cursor: 'pointer' }}>Go to {otherAction}</Link>
-                    <Button onClick={() => setIntro(true)} variant="outlined" color="primary" style={{ color: 'white', gridColumn: '1/3' }} >Introduction</Button>
+                    <Button variant="outlined" color="primary" style={{ color: '#ffffff', backgroundColor: '#7e1818', padding: '0.75em', borderRadius: '0.5em' }} type="submit">{action}</Button>
+                    <Link onClick={() => setAction(otherAction)} style={{ fontSize: '14pt', textAlign: 'center', color: '#ffffff', cursor: 'pointer' }}>{action === 'Signup' ? 'Go back to Login' : "Don't have an account? Sign Up"}</Link>
+                    {action === 'Login'
+                        ? <Link disabled style={{ cursor: 'not-allowed', fontSize: '14pt', textAlign: 'center', color: '#474747' }}>Forgot username or password?</Link>
+                        : null
+                    }
+                    <Button onClick={() => setIntro(true)} variant="outlined" color="primary" style={{ color: '#ffffff', gridColumn: '1/3' }} >Introduction</Button>
                     <Dialog
                         open={intro}
                         onClose={() => setIntro(false)}

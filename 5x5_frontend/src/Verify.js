@@ -5,6 +5,8 @@ import UserContext from "./user.js"
 export default function Verify() {
     const { _id, setUser } = useContext(UserContext);
 
+    // Instantly scrape code from URL, change location to home, and make request to
+    // api to verify code - logging in if successful
     useEffect(() => {
         const code = window.location.search.split("code=")[1].split("&")[0];
 
@@ -19,6 +21,6 @@ export default function Verify() {
     }, [])
 
     return _id
-        ? <p>verification successful</p>
-        : <p>verifying...</p>
+        ? <p>Verification successful</p>
+        : <p>Verifying...</p>
 }

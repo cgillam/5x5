@@ -47,6 +47,7 @@ export default function Rep({ muted, paused, number, nextRep }) {
     // If it's the first render
     const [first, setFirst] = useState(true);
 
+    // References to intervals to allow for pausing and resuming
     const intervalRef = useRef();
 
     const clearIntervalRef = () => {
@@ -77,7 +78,6 @@ export default function Rep({ muted, paused, number, nextRep }) {
                 setEnding(Date.now() + duration);
                 setRemaining(duration);
                 // Play the half sound in the middle of this stage
-                // todo - add sound pausing/resuming
                 clearHalfSound();
                 halfSoundDelay.current = setTimeout(() => playHalf(), duration / 2);
 
@@ -93,6 +93,7 @@ export default function Rep({ muted, paused, number, nextRep }) {
         return clearIntervalRef;
     }, [stageIndex, stageFinished]);
 
+    // Stop/start intervals upon pausing and resmuing
     useEffect(() => {
         if (first) return;
         if (paused) {

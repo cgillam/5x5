@@ -38,11 +38,7 @@ export default function Set({ muted, paused, number, nextSet }) {
     // Determine if the stage is finished
     const stageFinished = !stageRemaining;
 
-    // Go onto the next bar, or stop it
-    // Keep track of 
-    // If no longer breething, stop the barbreething interval, to allow for clearing of it
-    const intervalRef = useRef();
-    // If finished breething, then go onto the next breething stage
+    const intervalRef = useRef()
 
     // Update breething timer whenever the breething state changes
     useEffect(() => {
@@ -56,8 +52,6 @@ export default function Set({ muted, paused, number, nextSet }) {
         if (intervalRef.current) clearInterval(intervalRef.current);
     }
 
-    // Countdown the main delay timer
-    // Go onto the next bar, or stop it
     useEffect(() => {
         // If no longer breething, stop the bar
         if (!breething) return stopBar();

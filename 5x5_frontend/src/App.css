@@ -1,5 +1,6 @@
 body, html {
-  background-color: grey;
+  background-color: #2e2e2e;
+  height: 100vh;
 }
 
 .tracker{
@@ -125,14 +126,21 @@ body, html {
   }
 }
 
+#root {
+  height: 100vh;
+  padding-top: 1em;
+  background-color: black
+}
+
 .left-label {
   justify-content: left !important;
 }
 
 .MuiTextField-root.white-input > label, .MuiTextField-root.white-input input {
-  color: white !important;
-  background-color: rgba(25, 25, 25, 0.5);
-  border-radius: 1em;
+  color: #ffffff !important;
+  background-color: #2e2e2e;
+  border-radius: 0.5em;
+  font-size: 14pt;
 }
 
 .MuiPaper-root.black-paper {
@@ -142,6 +150,14 @@ body, html {
 .MuiTableCell-root.black-paper {
   background-color: black;
   color: white;
+}
+
+.MuiRadio-colorSecondary.Mui-checked{
+  color: #ffffff !important;
+}
+
+.MuiRadio-root {
+  color: #ffffff !important;
 }
 
 .MuiDialog-paperScrollBody.grey-modal {

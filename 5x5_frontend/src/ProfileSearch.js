@@ -8,12 +8,19 @@ import UserContext from './user'
 
 export default function ProfileSearch({ loggedUser }) {
     const user = useContext(UserContext)
+    // If the search dialog is opened
     const [open, setOpen] = useState(false);
-    const [query, setQuery] = useState("");
+    // Found users
     const [users, setUsers] = useState([]);
+
+    // If a search has been made
     const [searched, setSearched] = useState(false);
+
+    // Form values
+    const [query, setQuery] = useState("");
     const [queryType, setQueryType] = useState('identifier');
 
+    // Weight of latest squat, fetch the latest weight or use 100
     const [nextSquatWeight, setNextSquatWeight] = useState(100);
     useEffect(() => {
         fetch('/api/workout/next-squat-weight')
@@ -21,12 +28,14 @@ export default function ProfileSearch({ loggedUser }) {
             .then(({ weight }) => setNextSquatWeight(weight))
     }, [])
 
+    // Input for each query type
     const input = {
         identifier: <TextField label="Username/Email" required name="query" value={query} onChange={(e) => setQuery(e.target.value)} />,
         age: <TextField type="number" required label="Age" name="query" value={query} onChange={(e) => setQuery(e.target.value)} />,
         weight: <TextField type="number" required label="Weight" name="query" value={query} onChange={(e) => setQuery(e.target.value)} />,
     }[queryType];
 
+    // Update query based on changed query type, also clear users and searched status
     useEffect(() => {
         if (queryType === 'identifier') setQuery('');
         if (queryType === 'age') setQuery(loggedUser.age.toString());
@@ -41,7 +50,8 @@ export default function ProfileSearch({ loggedUser }) {
                 aria-label="Search"
                 onClick={() => {
                     setOpen(!open)
-                    if (open) setQuery("") || setUsers([])
+                    // Clear query and users when closing
+                    if (open) setQuery("") || setUsers([]) || setSearched(false)
                 }}
                 style={{ position: 'absolute', right: '1em' }}
             >
@@ -81,12 +91,12 @@ export default function ProfileSearch({ loggedUser }) {
                                 </span>
                             </form>
                             <List>
-                                {users.map((foundUser) =>
+                                {users.map((foundUser) => // Each found user is clickable, and linked to their own profile page
                                     <ListItem button selected={user._id === foundUser._id} key={foundUser._id} component={Link} to={`/profile/${foundUser.userName}`}>
                                         <ListItemText>{foundUser.userName}</ListItemText>
                                     </ListItem>
                                 )}
-                                {users.length === 0 && searched
+                                {users.length === 0 && searched // If there has been a search, and no users are found, show no users found
                                     ? <ListItem>
                                         <ListItemText>No users found</ListItemText>
                                     </ListItem>

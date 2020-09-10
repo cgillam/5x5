@@ -28,6 +28,7 @@ const theme = createMuiTheme({
   },
 });
 
+// Generate weight conversion methods for the given user
 const generateWeightToggles = user => ({
   toUserWeight: lb => {
     return user.conversion === 'lb' ? lb : lb / 2.205;
@@ -38,7 +39,7 @@ const generateWeightToggles = user => ({
 })
 
 function App() {
-  // Keep track of the currently selected tab
+  // For swipeable, tab value must be index - so use an array to represent the order
   const tabs = ['home', 'plans', 'history', 'profile', 'verify']
   const [tab, setTab] = useState(tabs.indexOf(window.location.pathname.split('/')[1] || 'home'));
   // Sound mute state
@@ -46,6 +47,7 @@ function App() {
 
   // Currently logged in user
   const [user, setLogggedInUser] = useState({});
+  // Ensure profile user is updated whenever logged in user is updated
   const setUser = (...args) => {
     setLogggedInUser(...args);
     setProfileUser(...args);
@@ -78,7 +80,8 @@ function App() {
       });
   }, [user, planID]);
 
-  const fullUser = {
+  // Full logged in user object - with methods
+  const loggedUser = {
     ...user,
     ...generateWeightToggles(user),
     setUser
@@ -86,58 +89,71 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <User.Provider value={fullUser} >
+      <User.Provider value={loggedUser} >
         <BrowserRouter>
           <TabContext value={tab}>
-            <TabList onChange={(_, newTab) => setTab(newTab)} centered variant="fullWidth">
-              <Tab label="Home" value={0} component={Link} to="/" />
-              <Tab label="Workout Plans" value={1} component={Link} to="/plans" />
-              <Tab label="History" value={2} component={Link} to="/history" />
-              <Tab label="Profile" value={3} component={Link} to="/profile" />
-            </TabList>
+            <header style={{
+              color: '#ffffff',
+              backgroundColor: '#000000',
+              paddingBottom: '0.5em'
+            }}>
+              <p style={{ fontSize: '18pt', paddingLeft: '5em', marginTop: '0' }}>Fitness Training App</p>
+              {user._id
+                ? <TabList onChange={(_, newTab) => setTab(newTab)} centered variant="fullWidth">
+                  <Tab style={{ fontSize: '14pt' }} label="Home" value={0} component={Link} to="/" />
+                  <Tab style={{ fontSize: '14pt' }} label="Workout Plans" value={1} component={Link} to="/plans" />
+                  <Tab style={{ fontSize: '14pt' }} label="History" value={2} component={Link} to="/history" />
+                  <Tab style={{ fontSize: '14pt' }} label="Profile" value={3} component={Link} to="/profile" />
+                </TabList>
+                : null
+              }
+            </header>
+            <main style={{
+              backgroundColor: '#2e2e2e',
+              height: '100%'
+            }}>
+              {tab === 4 // Show authenticate component on all but the verify tab
+                ? <TabPanel value={4}>
+                  <Verify />
+                </TabPanel>
+                : <Authenticate />
+              }
 
-            {tab === 4
-              ? <TabPanel value={4}>
-                <Verify />
-              </TabPanel>
-              : <Authenticate />
-            }
-
-            {user._id // Only show tab content when logged in
-              ? <SwipableView
-                axis="x"
-                index={tab}
-                enableMouseEvents={true}
-                onChangeIndex={(index) => setTab(index)}
-                slideStyle={{
-                  height: '95vh',
-                  position: 'relative'
-                }}
-              >
-                <TabPanel value={0} index={0}>
-                  <Tracker planId={planID} exercises={exercises} muted={muted} setMuted={setMuted} />
-                </TabPanel>
-                <TabPanel value={1} index={1}>
-                  <Plans planID={planID} setPlanID={(id) => setPlanID(id)} />
-                </TabPanel>
-                <TabPanel value={2} index={3}>
-                  <HistoryTable />
-                </TabPanel>
-                <TabPanel value={3} index={4}>
-                  <User.Provider value={{
-                    ...profileUser,
-                    ...generateWeightToggles(profileUser),
-                    setUser: setProfileUser
-                  }} >
-                    <ProfileSearch loggedUser={fullUser} />
-                    <User.Consumer>
-                      {profileUser => <Profile self={user._id === profileUser._id} loggedUser={fullUser} />}
-                    </User.Consumer>
-                  </User.Provider>
-                </TabPanel>
-              </SwipableView>
-              : null
-            }
+              {user._id // Only show tab content when logged in
+                ? <SwipableView
+                  axis="x"
+                  index={tab}
+                  enableMouseEvents={true}
+                  onChangeIndex={(index) => setTab(index)}
+                  slideStyle={{
+                    position: 'relative'
+                  }}
+                >
+                  <TabPanel value={0} index={0}>
+                    <Tracker planId={planID} exercises={exercises} muted={muted} setMuted={setMuted} />
+                  </TabPanel>
+                  <TabPanel value={1} index={1}>
+                    <Plans planID={planID} setPlanID={(id) => setPlanID(id)} />
+                  </TabPanel>
+                  <TabPanel value={2} index={3}>
+                    <HistoryTable />
+                  </TabPanel>
+                  <TabPanel value={3} index={4}>
+                    <User.Provider value={{ // User provider for profile user, while logged in user is delivered via props
+                      ...profileUser,
+                      ...generateWeightToggles(profileUser),
+                      setUser: setProfileUser
+                    }} >
+                      <ProfileSearch loggedUser={loggedUser} />
+                      <User.Consumer>
+                        {profileUser => <Profile self={user._id === profileUser._id} loggedUser={loggedUser} />}
+                      </User.Consumer>
+                    </User.Provider>
+                  </TabPanel>
+                </SwipableView>
+                : null
+              }
+            </main>
           </TabContext>
         </BrowserRouter>
       </User.Provider>

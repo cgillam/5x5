@@ -13,8 +13,20 @@ const Challange = require("../models/Challenge");
 
 const { defaultPlan } = require("../models/default");
 
+// Script to seed the database with various users, workout plans, challenges, and workouts
+
 (async () => {
+    console.log('Connecting and dropping...')
+    await connectDB();
+    await User.collection.drop().catch(() => undefined);
+    await WorkoutPlan.collection.drop().catch(() => undefined);
+    await Exercise.collection.drop().catch(() => undefined);
+    await Workout.collection.drop().catch(() => undefined);
+    await Challange.collection.drop().catch(() => undefined);
+    console.log('Connected and dropped')
+
     console.log('Seeding...')
+    // Users: abc/def, jill/pass, henry/pass
     let users = [{
         userName: "abc",
         passWord: (await new User({}).setPassWord("def")).passWord,
@@ -55,17 +67,13 @@ const { defaultPlan } = require("../models/default");
         referalCode: '54321',
         visibility: 'private'
     }];
-    await connectDB();
-    await User.collection.drop().catch(() => undefined);
-    await WorkoutPlan.collection.drop().catch(() => undefined);
-    await Exercise.collection.drop().catch(() => undefined);
-    await Workout.collection.drop().catch(() => undefined);
-    await Challange.collection.drop().catch(() => undefined);
 
     console.log('Inserting users...')
     users = await User.insertMany(users);
     console.log('Users inserted')
 
+    // Plans: abc - one slot one exercise
+    //        jill - three slots, one, two, then three exercises
     let workoutPlans = [defaultPlan, {
         author: users[0]._id,
         exerciseSlots: [[{
@@ -119,6 +127,10 @@ const { defaultPlan } = require("../models/default");
     }
     console.log('Workout Plans inserted')
 
+    // Various workouts for various users
+    // abc - has worked the main plan three times, adding swwllfie to first workout
+    // jill - four for the custom 1/2/3 plan
+    // henry - none
     let workouts = [{
         user: users[0]._id,
         exercises: workoutPlans[0].exerciseSlots.map(slot => slot[0]),
@@ -199,6 +211,9 @@ const { defaultPlan } = require("../models/default");
 
     const started = new Date(new Date().setDate(new Date().getDate() - 7));
     const ended = new Date(new Date().setDate(new Date().getDate() - 2));
+    // Challenges
+    // abc challenged jill and henry, challenge is still active, henry joined later
+    // abc challenges jill and henry with an end date of two days ago, henry lost, jill has uploaded swellfie video
     let challanges = [{
         author: users[0]._id,
         participants: [{

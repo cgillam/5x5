@@ -9,8 +9,12 @@ const { ENV } = require("../constance")
 const User = require("../models/User")
 const Workout = require("../models/Workout")
 
+// Get options for nodemailer
 const getMailOptions = async () => {
+    // If already defined in enviroment, parse and return those
     if (process.env.NODEMAILER_TRANSPORT) return JSON.parse(process.env.NODEMAILER_TRANSPORT)
+
+    // Otherwise, create and write test credentials to .env file
     console.warn("NODEMAILER_TRANSPORT not found")
     const test = await nodemailer.createTestAccount()
 
@@ -32,10 +36,15 @@ const getMailOptions = async () => {
 }
 exports.getMailOptions = getMailOptions
 
+// Get mail transport with provided options
 const getMailTransport = options => nodemailer.createTransport(options);
 exports.getMailTransport = getMailTransport
 
+// Generate random string of length - not original
 const randomString = length => Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+
+// Generate numbers in range of min and max - both inclusive
+const numbersInRange = (min, max) => [...Array(max - min + 1).keys()].map(i => i + min);
 
 passport.use("login", new LocalStrategy({
     usernameField: 'userName',
@@ -103,6 +112,7 @@ exports.signUp = async (req, res, next) => {
     const existingUser = await User.findByUserName(userName) || await User.findByEmail(email);
     if (existingUser) return res.status(409).send("user already exists");
 
+    // Find user whose referal code matches
     const referdBy = await User.findOne({ referalCode });
 
     // Create the user and set the password
@@ -110,6 +120,8 @@ exports.signUp = async (req, res, next) => {
         userName, age, conversion, gender, email,
         verification: {
             code: randomString(10),
+            // If the user has been refered, mark them as verified - but with -1
+            // to distinguish them from those who have had to self-verify
             verified: referdBy
                 ? -1
                 : false
@@ -120,12 +132,14 @@ exports.signUp = async (req, res, next) => {
     }).setPassWord(password);
     await user.save()
 
+    // If refered, log the user in
     if (referdBy) return req.login(user, (err) => {
         if (err) return next(err)
         res.json(user.toSelf())
     });
 
 
+    // Otherwise, send the user an email using these credentials
     const hostName = process.env.EMAIL_HOSTNAME || 'localhost:3000';
     const senderName = process.env.EMAIL_SENDER_NAME || 'Name';
     const senderEmail = process.env.EMAIL_SENDER_EMAIL || 'example@example.com'
@@ -135,9 +149,11 @@ exports.signUp = async (req, res, next) => {
         from: `"${senderName}" <${senderEmail}>`,
         to: email,
         subject: "Account Verify",
-        text: `ClIdentifierick link to verify your account ${url}`,
+        text: `Click link to verify your account ${url}`,
         html: `<a href="${url}">Click to Verify</a>`
     });
+
+    // If using test credentials, modify message with message URL and console.log the message URL
     let message = "verification email sent"
     if (transport.options.host && transport.options.host.includes('ethereal.email')) {
         message = "view verification email: " + nodemailer.getTestMessageUrl(mail);
@@ -147,31 +163,36 @@ exports.signUp = async (req, res, next) => {
     res.status(200).send(message);
 }
 
-// Attempt to sign user up
+// Allow the user to update parts of their profile
 exports.update = async (req, res, next) => {
     const {
         age, gender, conversion, visibility
     } = req.body
 
     const user = req.user;
-    console.log(user);
+    // For each field, update it if it's been included
     if (age) user.age = age;
     if (gender) user.gender = gender;
     if (conversion) user.conversion = conversion;
     if (visibility) user.visibility = visibility;
-    console.log(user);
+
     await user.save();
 
     res.json(user.toSelf())
 }
+
+
+// Verify the user by code
 exports.verify = async (req, res, next) => {
     const { code } = req.query;
 
+    // Find the user with the provied code
     const user = await User.findOne({
         'verification.code': code,
     });
     if (!user) return res.status(404).send("user not found");
 
+    // Verify the user right now
     if (!user.verification.verified) {
         user.verification = {
             ...user.verification,
@@ -194,20 +215,22 @@ exports.current = (req, res) => {
     res.status(401).end()
 }
 
-const numbersInRange = (min, max) => [...Array(max - min + 1).keys()].map(i => i + min);
-
+// Search for user by query and query type
 exports.search = async (req, res) => {
     const { query, queryType } = req.body;
 
+    // Find public users by identifier, or age
     const users = await User.find({
         visibility: 'public',
         ...{
+            // For identifier, simply check if the username or email contains the query ignoring case
             identifier: query => ({
                 $or: [
                     { userName: { $regex: query, $options: "i" } },
                     { email: { $regex: query, $options: "i" } }
                 ]
             }),
+            // For the age, check that the age is within a range of age-5 to age+5
             age: query => {
                 const age = Number(query);
                 return {
@@ -217,26 +240,32 @@ exports.search = async (req, res) => {
                     ]
                 }
             },
+            // Weight cannot be filtered with a single query, so use a noop
             weight: () => ({})
         }[queryType](query)
     });
 
+    // Perform manual filtering for weight
     if (queryType === 'weight') {
         const weight = Number(query);
         for (const user of [...users]) {
+            // Get all workouts of user - and those exercises
             const workouts = await Workout.find({
                 user
             }).populate('exercises');
+            // Convert array of array of exercises, into an array of just squats, with the weight the squat was performed at
             const weightedExercises = workouts.map(w => w.exercises.map(({ title }, i) => ({
                 title,
                 weight: w.weights[i]
             }))).flat().filter(e => e.title === 'Squat');
+            // Check if any of the squats have a weight within the weight-25 to weight+25 range
             const found = weightedExercises.some(squat => {
                 if (squat.weight < weight - 25) return false;
                 if (squat.weight > weight + 25) return false;
                 return true;
             })
             if (found) continue;
+            // If not, remove the user
             const userIndex = users.findIndex(loopUser => loopUser._id.equals(user._id));
             users.splice(userIndex, 1);
         }
@@ -245,12 +274,14 @@ exports.search = async (req, res) => {
     res.json(users.map(user => user.toPublic()));
 }
 
+// Get a user exacty by username
 exports.get = async (req, res) => {
     const { userName } = req.params
     const user = await User.findByUserName(userName);
     // we add the != public check to ensure private users cannot be directly found
-    if (!user || user.visibility !== 'public') return res.status(404).json({ message: "user not found" });
+    if (!user || (user.visibility !== 'public' && !req.user._id.equals(user._id))) return res.status(404).json({ message: "user not found" });
 
+    // If it's the current user, return self, otherwise public variant
     res.json({
         user: user._id.equals(req.user._id)
             ? user.toSelf()

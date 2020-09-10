@@ -7,13 +7,17 @@ import ReactCSSTransitionReplace from 'react-css-transition-replace'
 const defaultPlan = { exerciseSlots: [[{ title: 'Exercise', buffer: 1000, stages: [{ action: 'Up', duration: 5000 }, { action: 'Down', duration: 5000 }] }]] }
 
 export default function Plans({ planID, setPlanID }) {
+    // Plans type to fetch
     const [explore, setExplore] = useState(false)
+    // If plans are loading
     const [loading, setLoading] = useState(true)
     const [plans, setPlans] = useState([]);
+    // Set loading to true, remove current plans, and fetch plans
     const fetchPlans = () => setLoading(true) || setPlans([]) || fetch('/api/plans/list' + (explore ? "/public" : ""))
         .then(r => r.json())
         .then(({ plans }) => setPlans(plans))
         .catch(console.error)
+        // One second delay to allow for animation not to be cut off
         .then(() => setTimeout(() => setLoading(false), 1000))
 
     useEffect(() => {
@@ -43,20 +47,9 @@ export default function Plans({ planID, setPlanID }) {
     return (
         <React.Fragment>
             <ul style={{ listStyleType: 'none' }}>
-                <li>
-                    <Paper
-                        style={{
-                            backgroundColor: 'darkgrey', padding: '0.5em', margin: '0.5em',
-                            boxShadow: '0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1)',
-                            width: 'max-content',
-                            margin: '0 auto'
-                        }}
-                    >
-                        <ToggleButtonGroup exclusive value={explore} onChange={(_, newExplore) => setExplore(newExplore)}>
-                            <ToggleButton value={false}>Default</ToggleButton>
-                            <ToggleButton value={true}>Explore</ToggleButton>
-                        </ToggleButtonGroup>
-                    </Paper>
+                <li style={{ fontSize: '18pt' }}>
+                    <Button style={{ marginRight: '1em', color: '#ffffff', borderRadius: '0.5em', backgroundColor: explore == false ? '#626262' : '#3e3e3e' }} onClick={() => setExplore(false)}>Default Plan</Button>
+                    <Button style={{ color: '#ffffff', borderRadius: '0.5em', backgroundColor: explore == true ? '#626262' : '#3e3e3e' }} onClick={() => setExplore(true)}>Explore Plans</Button>
                 </li>
                 <ReactCSSTransitionReplace
                     transitionName="fade-wait"
@@ -67,8 +60,7 @@ export default function Plans({ planID, setPlanID }) {
                         ? <li key="loading">
                             <Paper
                                 style={{
-                                    backgroundColor: 'darkgrey', padding: '0.5em', margin: '0.5em',
-                                    boxShadow: '0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1)',
+                                    backgroundColor: '#c4c4c4', padding: '1em', margin: '0.5em',
                                     width: 'max-content',
                                     margin: '0 auto'
                                 }}
@@ -93,8 +85,8 @@ export default function Plans({ planID, setPlanID }) {
                                         }}
                                     >
 
-                                        <ButtonGroup color="primary" style={{ float: 'right' }}>
-                                            {plan.author ? <Button color="primary" variant="outlined" onClick={() => {
+                                        <span style={{ float: 'right' }}>
+                                            {plan.author ? <Button color="primary" onClick={() => {
                                                 // Delete button visible on plans that have an author
                                                 // TODO - don't show button if the author is not the current user
                                                 fetch("/api/plans/" + plan._id, {
@@ -108,9 +100,9 @@ export default function Plans({ planID, setPlanID }) {
                                                     if (planID === plan._id && newPlans.length) setPlanID(newPlans[planIndex === newPlans.length ? planIndex - 1 : planIndex]._id);
                                                 })
                                             }}>Delete</Button> : null}
-                                            <Button disabled={planID === plan._id} color="primary" variant="outlined" onClick={() => setPlanID(plan._id)}>Select</Button>
-                                            <Button color="primary" variant="outlined" onClick={() => setEditing(true)}>New Plan</Button>
-                                        </ButtonGroup>
+                                            <Button disabled={planID === plan._id} color="primary" onClick={() => setPlanID(plan._id)}>Select</Button>
+                                            <Button color="primary" onClick={() => setEditing(true)}>New Plan</Button>
+                                        </span>
                                         {plan.author // Show author if available
                                             ? <p>Created By: {plan.author.userName}</p>
                                             : null

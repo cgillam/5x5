@@ -14,6 +14,7 @@ const WorkoutPlan = ({ plan, workouts, longestSlot }) => {
     const { toUserWeight } = useContext(UserContext);
     // ID of currently hovered comment
     const [hovering, setHovering] = useState();
+    // Currently displayed image
     const [image, setImage] = useState();
     // Array of indexes up until the longest slot
     const idxArr = [...Array(longestSlot).keys()]
@@ -72,7 +73,7 @@ const WorkoutPlan = ({ plan, workouts, longestSlot }) => {
                                                 {content}
                                             </TableCell>
                                             <TableCell classes={{ root: 'black-paper' }} align="center">
-                                                {lastRow
+                                                {lastRow // If on last row, there is a workout, and that workout has a image, show a button to show it, otherwise a cross, otherwise nothing
                                                     ? workouts[j] && workouts[j].image
                                                         ? <Button style={{ color: 'red' }} onClick={() => setImage(workouts[j].image)}>✓</Button>
                                                         : <CancelOutlinedIcon />
@@ -139,7 +140,6 @@ export default function HistoryTable() {
                     slot.length < longest ? longest : slot.length, 0
                 )
                 // Chunkify workouts into longestSlot long chunks
-                // TODO - test reverse not rquired
                 const tableData = chunkify(
                     plan.workouts.sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
                     longestSlot

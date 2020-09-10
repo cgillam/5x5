@@ -36,7 +36,8 @@ exports.list = async (req, res) => {
         // Populate the userName of all authors
         .populate('author', 'userName');
 
-    // TODO - filter out default old plan
+    // TODO - filter out old default plan - only required if default plan
+    // changed without resetting database
 
     res.json({
         plans: plans.map((plan) => {
