@@ -53,10 +53,11 @@ export default function Challenges({ setChallenges, loggedUser }) {
             </Dialog>
             <Paper
                 style={{
-                    backgroundColor: 'darkgrey', padding: '0.5em', margin: '0.5em',
+                    backgroundColor: 'darkgrey', padding: '0.5em',
                     boxShadow: '0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1)',
-                    width: 'max-content',
-                    margin: '0 auto'
+                    margin: '0 auto',
+                    width: 'min-content',
+                    minWidth: '50vw'
                 }}
             >
                 <Button onClick={() => setChallenges(false)}>Hide Challenges</Button>
@@ -204,11 +205,11 @@ export default function Challenges({ setChallenges, loggedUser }) {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <ul>
-                    <li>Statuses</li>
+                <p>Statuses</p>
+                <ul style={{ wordWrap: '' }}>
                     {statuses.map(({ text, when }) => // Combine when with text to avoid conflict when two messages have the same time - has happened on more then one occation
                         <li key={when + '_' + text}>
-                            <p>{text} at {new Date(when).toLocaleString()}</p>
+                            <p class="normal-font">{text} at {new Date(when).toLocaleString()}</p>
                         </li>
                     )}
                 </ul>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react"
+import React, { useState, useEffect, useContext, useRef, useCallback } from "react"
 
 
 import Rep from './Rep.js'
@@ -52,7 +52,7 @@ export default function Set({ muted, paused, number, nextSet }) {
         if (intervalRef.current) clearInterval(intervalRef.current);
     }
 
-    useEffect(() => {
+    useEffect(useCallback(() => {
         // If no longer breething, stop the bar
         if (!breething) return stopBar();
         // If finished breething, then go onto the next breething stage
@@ -68,7 +68,7 @@ export default function Set({ muted, paused, number, nextSet }) {
             });
             return;
         }
-    }, [stage, stageFinished, remaining, breething]);
+    }, [first, stageFinished, breething]), [stage, stageFinished, remaining, breething]);
 
     // Countdown the main delay timer
     useEffect(() => {
@@ -80,13 +80,13 @@ export default function Set({ muted, paused, number, nextSet }) {
     }, [stageEnding]);
 
     // If finished all reps, start up the main delay timer
-    useEffect(() => {
+    useEffect(useCallback(() => {
         if (rep !== REP_TOTAL + 1 && rep !== 0) return;
 
         const duration = rep === 0 ? buffer : DELAY
         setMainEnding(Date.now() + duration);
         setRemaining(duration);
-    }, [rep]);
+    }, [rep, buffer]), [rep]);
 
     // Update main ending interval timer
     useEffect(() => {
@@ -98,12 +98,12 @@ export default function Set({ muted, paused, number, nextSet }) {
     }, [mainEnding])
 
     // Increment the set when the main timer is finished
-    useEffect(() => {
+    useEffect(useCallback(() => {
         if (!first && !remaining) {
             setRep(1);
             nextSet();
         }
-    }, [remaining]);
+    }, [first, remaining, nextSet]), [remaining]);
 
     // Flip the first boolean
     useEffect(() => {
@@ -121,7 +121,7 @@ export default function Set({ muted, paused, number, nextSet }) {
 
     return (
         <div>
-            {number ? <p> Set #{number} </p> : null}
+            {number ? <p> Set #<span class="normal-font">{number}</span> </p> : null}
             {content}
             <div id="breathing-bar" className={breething ? 'breething' : ''} style={{ animationDuration: (4000 * 4) + 'ms' }}></div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from "react"
-import { Button, TextField, Paper, Box, Grid, Dialog, DialogTitle, Link, FormControl, FormControlLabel, RadioGroup, FormLabel, Radio } from '@material-ui/core'
+import { Button, TextField, Paper, Grid, Dialog, DialogTitle, Link, FormControl, FormControlLabel, RadioGroup, Radio } from '@material-ui/core'
 
 import UserContext from './user.js'
 import FeaturesImage from './gif 1.gif'

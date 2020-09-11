@@ -8,6 +8,7 @@ export default function Verify() {
     // Instantly scrape code from URL, change location to home, and make request to
     // api to verify code - logging in if successful
     useEffect(() => {
+        if (!window.location.search.includes('code=')) return;
         const code = window.location.search.split("code=")[1].split("&")[0];
 
         // eslint-disable-next-line
@@ -18,7 +19,7 @@ export default function Verify() {
             .then((currentUser) => {
                 setUser(currentUser);
             })
-    }, [])
+    }, [setUser])
 
     return _id
         ? <p>Verification successful</p>

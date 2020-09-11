@@ -19,6 +19,8 @@ const WorkoutPlan = ({ plan, workouts, longestSlot }) => {
     // Array of indexes up until the longest slot
     const idxArr = [...Array(longestSlot).keys()]
 
+    // TODO - animate like workout plan
+    // todo - show message when history is empty
     return (
         <>
             <Dialog
@@ -28,7 +30,7 @@ const WorkoutPlan = ({ plan, workouts, longestSlot }) => {
                 fullWidth={true}
                 maxWidth={'xs'}
             >
-                <img src={image} style={{ width: '100%' }} />
+                <img src={image} style={{ width: '100%' }} alt="Swellfie" />
             </Dialog>
             <TableContainer style={{ width: 'unset', marginTop: '0.5em', marginBottom: '0.5em' }} component={Paper}>
                 <Table>
@@ -37,7 +39,7 @@ const WorkoutPlan = ({ plan, workouts, longestSlot }) => {
                             {idxArr.map((i) => // Add headers for each of the exercise slots
                                 <React.Fragment key={i}>
                                     <TableCell classes={{ root: 'black-paper' }}>Exercise</TableCell>
-                                    <TableCell classes={{ root: 'black-paper' }}>{workouts[i] ? new Date(workouts[i].createdAt).toDateString() : indexToChar(i)} Swlefie</TableCell>
+                                    <TableCell classes={{ root: 'black-paper' }}>{workouts[i] ? new Date(workouts[i].createdAt).toDateString() : indexToChar(i)}</TableCell>
                                     <TableCell classes={{ root: 'black-paper' }}>Swellfie</TableCell>
                                 </React.Fragment>
                             )}
@@ -123,7 +125,7 @@ export default function HistoryTable() {
             {loading
                 ? <Paper
                     style={{
-                        backgroundColor: 'darkgrey', padding: '0.5em', margin: '0.5em',
+                        backgroundColor: 'darkgrey', padding: '0.5em',
                         boxShadow: '0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1)',
                         width: 'max-content',
                         margin: '0 auto'

@@ -1,6 +1,18 @@
+@font-face {
+  font-family: "Pretendo";
+  src: url("//db.onlinewebfonts.com/t/487390d5558cff7a17ce35d7d92a0540.eot");
+  src: url("//db.onlinewebfonts.com/t/487390d5558cff7a17ce35d7d92a0540.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/487390d5558cff7a17ce35d7d92a0540.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/487390d5558cff7a17ce35d7d92a0540.woff") format("woff"), url("//db.onlinewebfonts.com/t/487390d5558cff7a17ce35d7d92a0540.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/487390d5558cff7a17ce35d7d92a0540.svg#Pretendo") format("svg");
+  font-display: swap;
+}
+
 body, html {
+  font-family: 'Pretendo' !important;
   background-color: #2e2e2e;
   height: 100vh;
+}
+
+.normal-font {
+  font-family: 'Times New Roman Georgia'
 }
 
 .tracker{

@@ -1,7 +1,7 @@
-import React, { useStage, useEffect, useState } from 'react';
-import { Button, Dialog, DialogTitle, ButtonGroup, Paper } from '@material-ui/core'
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
+import React, { useEffect, useState } from 'react';
+import { Button, Dialog, DialogTitle, Paper } from '@material-ui/core'
 import PlanForm from './PlanForm'
+// TODO - lazily load
 import ReactCSSTransitionReplace from 'react-css-transition-replace'
 
 const defaultPlan = { exerciseSlots: [[{ title: 'Exercise', buffer: 1000, stages: [{ action: 'Up', duration: 5000 }, { action: 'Down', duration: 5000 }] }]] }
@@ -12,21 +12,17 @@ export default function Plans({ planID, setPlanID }) {
     // If plans are loading
     const [loading, setLoading] = useState(true)
     const [plans, setPlans] = useState([]);
-    // Set loading to true, remove current plans, and fetch plans
-    const fetchPlans = () => setLoading(true) || setPlans([]) || fetch('/api/plans/list' + (explore ? "/public" : ""))
-        .then(r => r.json())
-        .then(({ plans }) => setPlans(plans))
-        .catch(console.error)
-        // One second delay to allow for animation not to be cut off
-        .then(() => setTimeout(() => setLoading(false), 1000))
 
     useEffect(() => {
-        if (loading) return
-        fetchPlans()
-    }, [explore])
-    useEffect(() => {
-        fetchPlans()
-    }, []);
+        setLoading(true)
+        setPlans([])
+        fetch('/api/plans/list' + (explore ? "/public" : ""))
+            .then(r => r.json())
+            .then(({ plans }) => setPlans(plans))
+            .catch(console.error)
+            // One second delay to allow for animation not to be cut off
+            .then(() => setTimeout(() => setLoading(false), 1000))
+    }, [explore]);
 
     // Data of new plan
     const [editingPlan, setEditingPlan] = useState(JSON.parse(JSON.stringify(defaultPlan)))
@@ -48,8 +44,8 @@ export default function Plans({ planID, setPlanID }) {
         <React.Fragment>
             <ul style={{ listStyleType: 'none' }}>
                 <li style={{ fontSize: '18pt' }}>
-                    <Button style={{ marginRight: '1em', color: '#ffffff', borderRadius: '0.5em', backgroundColor: explore == false ? '#626262' : '#3e3e3e' }} onClick={() => setExplore(false)}>Default Plan</Button>
-                    <Button style={{ color: '#ffffff', borderRadius: '0.5em', backgroundColor: explore == true ? '#626262' : '#3e3e3e' }} onClick={() => setExplore(true)}>Explore Plans</Button>
+                    <Button style={{ marginRight: '1em', color: '#ffffff', borderRadius: '0.5em', backgroundColor: explore === false ? '#626262' : '#3e3e3e' }} onClick={() => setExplore(false)}>Default Plan</Button>
+                    <Button style={{ color: '#ffffff', borderRadius: '0.5em', backgroundColor: explore === true ? '#626262' : '#3e3e3e' }} onClick={() => setExplore(true)}>Explore Plans</Button>
                 </li>
                 <ReactCSSTransitionReplace
                     transitionName="fade-wait"
@@ -60,7 +56,7 @@ export default function Plans({ planID, setPlanID }) {
                         ? <li key="loading">
                             <Paper
                                 style={{
-                                    backgroundColor: '#c4c4c4', padding: '1em', margin: '0.5em',
+                                    backgroundColor: '#c4c4c4', padding: '1em',
                                     width: 'max-content',
                                     margin: '0 auto'
                                 }}
@@ -111,7 +107,7 @@ export default function Plans({ planID, setPlanID }) {
                                         <Paper style={{ backgroundColor: 'black', color: 'white', padding: '0.5em', display: 'flex', flexWrap: 'wrap' }}>
                                             {plan.exerciseSlots.map((slot, i) =>
                                                 <li key={i} style={{ display: 'inline', flex: '1' }} >
-                                                    <p>slot: {i + 1}</p>
+                                                    <p>slot: <span class="normal-font">{i + 1}</span></p>
                                                     <ul>
                                                         {idxArr.map(j => {
                                                             // Get current exercise - loops around the slot for shorter exercise slots
@@ -119,12 +115,12 @@ export default function Plans({ planID, setPlanID }) {
                                                             return (
                                                                 <li key={j + '.' + exercise._id} >
                                                                     <p>name: {exercise.title}</p>
-                                                                    <p>buffer: {exercise.buffer / 1000}s</p>
+                                                                    <p>buffer: <span class="normal-font">{exercise.buffer / 1000}</span>s</p>
                                                                     <ul>
                                                                         {exercise.stages.map((stage, j) =>
                                                                             <li key={j} >
                                                                                 <p>action: {stage.action}</p>
-                                                                                <p>duration: {stage.duration / 1000}s</p>
+                                                                                <p>duration: <span class="normal-font">{stage.duration / 1000}</span>s</p>
                                                                             </li>
                                                                         )}
                                                                     </ul>

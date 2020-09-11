@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { Button, TextField, Dialog, Paper, Grid } from '@material-ui/core'
 
 import Lift from './Lift.js';
@@ -34,7 +34,7 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
     const [formWeight, setFormWeight] = useState(toUserWeight(DEFAULT_WEIGHT));
     const [weight, setWeight] = useState();
 
-    useEffect(() => {
+    useEffect(useCallback(() => {
         if (exercise) {
             // Set the form weight to the suggested weight of default weight
             if (!exercise.weight) setFormWeight(toUserWeight(DEFAULT_WEIGHT))
@@ -57,7 +57,7 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
                 image
             })
         });
-    }, [exercise]);
+    }, [comments, exercises, image, planId, toUserWeight, weights, exercise]), [exercise]);
 
     // If there is no exercise, show completed message
     if (!exercise) return <h1>All exercises completed</h1>
@@ -138,7 +138,7 @@ export default function Tracker({ planId, exercises, muted, setMuted }) {
                             fullWidth={true}
                             maxWidth={'xs'}
                         >
-                            <img src={exercise.image} style={{ width: '100%' }} />
+                            <img src={exercise.image} style={{ width: '100%' }} alt="Exercise Help" />
                         </Dialog>
                         {exercise.image // Only show button if image exists
                             ? <Button onClick={() => setHelp(true)} style={{ zIndex: 15 }}>View Help</Button>

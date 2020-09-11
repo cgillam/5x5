@@ -1,9 +1,10 @@
 import React from "react"
-import { Button, ButtonGroup, TextField, Paper } from '@material-ui/core'
+import { Button, ButtonGroup, TextField, useMediaQuery } from '@material-ui/core'
 
 import { fileToBase64 } from './helper'
 
 export default function PlanForm({ plan, setPlan, addPlan }) {
+    const isMobile = useMediaQuery('(max-width:600px)');
     const insertSlot = (i) => {
         const newSlots = [...plan.exerciseSlots];
         const slot = [{ title: 'Exercise', buffer: 1000, stages: [{ action: 'Up', duration: 5000 }, { action: 'Down', duration: 5000 }] }];
@@ -32,19 +33,6 @@ export default function PlanForm({ plan, setPlan, addPlan }) {
         setPlan({ ...plan, exerciseSlots: newSlots });
 
     }
-    const moveExercise = (i, j, change) => {
-        const newSlots = [...plan.exerciseSlots];
-        const target = j + change
-        if (target < 0) return
-        if (target >= newSlots[i].length) return
-        const temp = newSlots[i][target]
-        newSlots[i].splice(target, 1)
-        newSlots[i].splice(j, 0, temp)
-
-
-        setPlan({ ...plan, exerciseSlots: newSlots });
-
-    }
     const deleteExercise = (i, j) => {
         const newPlan = {
             ...plan, exerciseSlots: plan.exerciseSlots.filter((slot, index) => {
@@ -59,20 +47,6 @@ export default function PlanForm({ plan, setPlan, addPlan }) {
         const newSlots = [...plan.exerciseSlots];
         newSlots[i][j].stages.splice(k, 0, { action: 'Action', duration: 5000 })
         setPlan({ ...plan, exerciseSlots: newSlots });
-    }
-    const moveStage = (i, j, k, change) => {
-        const newSlots = [...plan.exerciseSlots];
-        const target = k + change
-        if (target < 0) return
-        if (target >= newSlots[i][j].stages.length) return
-        const temp = newSlots[i][j].stages[target]
-        newSlots[i][j].stages.splice(target, 1)
-        newSlots[i][j].stages.splice(k, 0, temp)
-
-
-        setPlan({ ...plan, exerciseSlots: newSlots });
-
-
     }
     const deleteStage = (i, j, k) => {
         setPlan({
@@ -136,8 +110,8 @@ export default function PlanForm({ plan, setPlan, addPlan }) {
                 }
                 {plan.exerciseSlots.map((slot, i) =>
                     <li key={i}>
-                        <ButtonGroup color="primary" style={{ float: 'right' }} style={{
-                            boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)'
+                        <ButtonGroup color="primary" orientation={isMobile ? 'vertical' : 'horizontal'} style={{
+                            float: 'right', boxShadow: '0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)'
                         }}>
                             <Button color="primary" variant="outlined" onClick={() => insertSlot(i)}>Add Above</Button>
                             <Button color="primary" variant="outlined" onClick={() => insertSlot(i + 1)}>Add Below</Button>

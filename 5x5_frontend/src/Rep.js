@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react"
+import React, { useState, useEffect, useContext, useRef, useCallback } from "react"
 import { keyframes } from "styled-components/macro"
 import useSound from 'use-sound'
 
@@ -63,13 +63,14 @@ export default function Rep({ muted, paused, number, nextRep }) {
     // If the stage is finished
     const stageFinished = !remaining;
     // Go onto the next stage if finished, otherwise set the interal for the current stage
-    useEffect(() => {
+    useEffect(useCallback(() => {
         if (stageFinished) {
             // If it's not the first mount and the last stage index, go to the next rep
             if (stageIndex === lastStageIndex && !first) nextRep();
             // Flip the first boolean
             if (first) setFirst(false);
 
+            // TODO - noop if last rep
             play();
             // Set the stage index to the next stage index - cycling around to the first as needed
             setStageIndex(stageIndex => {
@@ -91,10 +92,10 @@ export default function Rep({ muted, paused, number, nextRep }) {
             10);
 
         return clearIntervalRef;
-    }, [stageIndex, stageFinished]);
+    }, [ending, exercise.stages, first, lastStageIndex, nextRep, play, playHalf, stageIndex, stageFinished]), [stageIndex, stageFinished]);
 
     // Stop/start intervals upon pausing and resmuing
-    useEffect(() => {
+    useEffect(useCallback(() => {
         if (first) return;
         if (paused) {
             clearHalfSound();
@@ -110,7 +111,7 @@ export default function Rep({ muted, paused, number, nextRep }) {
             clearHalfSound();
             halfSoundDelay.current = setTimeout(() => playHalf(), halfRemaining);
         }
-    }, [paused]);
+    }, [paused, first, playHalf, remaining, stage.duration]), [paused]);
 
     // Length of a single rep, function to generate animation keyframes, and generated keyframes
     const repDuration = exercise.stages.reduce((ttl, stage) => ttl + stage.duration, 0);
@@ -119,10 +120,10 @@ export default function Rep({ muted, paused, number, nextRep }) {
 
     return (
         <React.Fragment>
-            <p>Rep #{number + 1}</p>
+            <p>Rep #<span class="normal-font">{number + 1}</span></p>
             <p>{stage.action}</p>
 
-            <p>{remaining / 1000}s...</p>
+            <p class="normal-font">{remaining / 1000}s...</p>
 
             <div
                 id="exercise-bar"

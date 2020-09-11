@@ -1,6 +1,7 @@
 // Express server entry point
 
 const express = require('express')
+const compression = require('compression')
 const passport = require("passport")
 const cookieParser = require("cookie-parser")
 const bodyParser = require("body-parser")
@@ -23,6 +24,9 @@ const { getMailOptions, getMailTransport } = require("./contolers/User")
 const rout = require("./routs/index.js")
 
 const app = express()
+
+app.set('etag', 'strong')
+app.use(compression())
 
 // Use common logging
 app.use(morgan("common"))

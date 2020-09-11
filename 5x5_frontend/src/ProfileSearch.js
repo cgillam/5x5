@@ -1,8 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Paper, List, ListItem, ListItemText, Button, TextField, Fab, FormControl, FormControlLabel, RadioGroup, FormLabel, Radio } from '@material-ui/core'
+import { Paper, List, ListItem, ListItemText, Button, TextField, useMediaQuery, Fab, FormControl, FormControlLabel, RadioGroup, Radio } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom'
-import Profile from "./Profile.js"
 import UserContext from './user'
 
 
@@ -12,6 +11,8 @@ export default function ProfileSearch({ loggedUser }) {
     const [open, setOpen] = useState(false);
     // Found users
     const [users, setUsers] = useState([]);
+
+    const isMobile = useMediaQuery('(max-width:600px)');
 
     // If a search has been made
     const [searched, setSearched] = useState(false);
@@ -42,7 +43,7 @@ export default function ProfileSearch({ loggedUser }) {
         if (queryType === 'weight') setQuery(nextSquatWeight.toString());
         setUsers([]);
         setSearched(false);
-    }, [queryType])
+    }, [queryType, nextSquatWeight, loggedUser.age])
 
     return (
         <span>
@@ -59,10 +60,19 @@ export default function ProfileSearch({ loggedUser }) {
             </Fab>
             {
                 open
-                    ? <span style={{ position: 'absolute', right: '5em', zIndex: '1' }}>
+                    ? <span style={{
+                        position: 'absolute',
+                        right: '5em',
+                        zIndex: '1',
+                        ...(isMobile ? {
+                            top: '5em',
+                            right: '0',
+                            left: '0'
+                        } : {})
+                    }}>
                         <Paper
                             style={{
-                                backgroundColor: 'darkgrey', padding: '0.5em', margin: '0.5em',
+                                backgroundColor: 'darkgrey', padding: '0.5em',
                                 boxShadow: '0px 22px 35px -14px rgba(255,255,255,1),0px 48px 72px 6px rgba(255,255,255,1),0px 18px 92px 16px rgba(255,255,255,1)',
                                 width: 'max-content',
                                 margin: '0 auto'
@@ -78,7 +88,7 @@ export default function ProfileSearch({ loggedUser }) {
                                     .then(users => setUsers(users) || setSearched(true))
                             }}>
                                 <FormControl component="fieldset" style={{ display: 'flex' }}>
-                                    <RadioGroup style={{ flexDirection: 'row' }} aria-label="Query Type" name="queryType" value={queryType} onChange={(e) => setQueryType(e.target.value)}>
+                                    <RadioGroup style={{ flexDirection: isMobile ? 'column' : 'row' }} aria-label="Query Type" name="queryType" value={queryType} onChange={(e) => setQueryType(e.target.value)}>
                                         <FormControlLabel value="identifier" control={<Radio />} label="Username/Email" />
                                         <FormControlLabel value="age" control={<Radio />} label="Age" />
                                         <FormControlLabel value="weight" control={<Radio />} label="Weight" />
