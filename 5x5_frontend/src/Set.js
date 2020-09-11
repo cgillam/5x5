@@ -45,7 +45,8 @@ export default function Set({ muted, paused, number, nextSet }) {
         const duration = breething ? 4000 : 0
         setStageEnding(Date.now() + duration);
         setStageRemaining(duration);
-    }, [breething])
+        if (!breething) setStage(3);
+    }, [breething]);
 
     // Stop the breething bar
     const stopBar = () => {

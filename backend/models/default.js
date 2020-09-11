@@ -13,27 +13,27 @@ const DefaultExersiserPlan = {
             title: 'Squat',
             image: 'data:image/gif;base64, ' + fs.readFileSync(path.join(__dirname, '../assets/barbell-squat.gif')).toString('base64'),
             buffer: 20000,
-            stages: [{ action: 'Squat', duration: 4000 }, { action: 'Raise', duration: 2000 }, { action: 'Reset', duration: 4000 }],
+            stages: [{ action: 'Squat', duration: 4000 }, { action: 'Raise', duration: 4000 }, { action: 'Reset', duration: 2000 }],
         }], [{
             title: 'Bench',
             image: 'data:image/gif;base64, ' + fs.readFileSync(path.join(__dirname, '../assets/bench.gif')).toString('base64'),
             buffer: 20000,
-            stages: [{ action: 'Lower', duration: 4000 }, { action: 'Pause', duration: 2000 }, { action: 'Raise', duration: 4000 }],
+            stages: [{ action: 'Lower', duration: 4000 }, { action: 'Raise', duration: 4000 }, { action: 'Pause', duration: 2000 }],
         }, {
             title: 'Press',
             image: 'data:image/gif;base64, ' + fs.readFileSync(path.join(__dirname, '../assets/military-press.gif')).toString('base64'),
             buffer: 20000,
-            stages: [{ action: 'Lower', duration: 4000 }, { action: 'Pause', duration: 2000 }, { action: 'Raise', duration: 4000 }],
+            stages: [{ action: 'Raise', duration: 4000 }, { action: 'Lower', duration: 4000 }, { action: 'Pause', duration: 2000 }],
         }], [{
             title: 'Row',
             image: 'data:image/gif;base64, ' + fs.readFileSync(path.join(__dirname, '../assets/row.gif')).toString('base64'),
             buffer: 20000,
-            stages: [{ action: 'Raise', duration: 4000 }, { action: 'Lower', duration: 2000 }, { action: 'Reset', duration: 4000 }],
+            stages: [{ action: 'Raise', duration: 4000 }, { action: 'Lower', duration: 4000 }, { action: 'Reset', duration: 2000 }],
         }, {
             title: 'Deadlift',
             image: 'data:image/gif;base64, ' + fs.readFileSync(path.join(__dirname, '../assets/conventional-deadlifts-2-4.gif')).toString('base64'),
             buffer: 20000,
-            stages: [{ action: 'Raise', duration: 4000 }, { action: 'Lower', duration: 200 }, { action: 'Reset', duration: 4000 }],
+            stages: [{ action: 'Raise', duration: 4000 }, { action: 'Lower', duration: 4000 }, { action: 'Reset', duration: 2000 }],
         }]
     ]
 };

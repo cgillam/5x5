@@ -8,22 +8,28 @@ import Exercise from './exercise.js'
 // Functions that generate the animation keyframes based on the exercise stages and length of the entire animation
 const animationGenertators = {
     1: () => `
-        0% { height:0%; }
-        50% { height:100%; }
-        100% { height:0%; }
+        0% { height:100%; }
+        50% { height:0%; }
+        100% { height:100%; }
     `,
     2: ([first], length) => `
-        0% { height:0%; }
-        ${first.duration / length * 100}% { height:100%; }
-        100% { height:0%; }
+        0% { height:100%; }
+        ${first.duration / length * 100}% { height:0%; }
+        100% { height:100%; }
     `,
-    3: ([first, second], length) => {
+    3: ([first, second], length, title) => {
         const firstPercent = first.duration / length * 100
+        if (title === 'Row' || title === 'Deadlift') return `
+                0% { height:0%; }
+                ${firstPercent}% { height:100%; }
+                ${firstPercent + (second.duration / length * 100)}% { height:0%; }
+                100% { height:0%; }
+            `
         return `
-            0% { height:0%; }
-            ${firstPercent}% { height:100%; }
+            0% { height:100%; }
+            ${firstPercent}% { height:0%; }
             ${firstPercent + (second.duration / length * 100)}% { height:100%; }
-            100% { height:0%; }
+            100% { height:100%; }
         `
     }
 }
@@ -116,7 +122,7 @@ export default function Rep({ muted, paused, number, nextRep }) {
     // Length of a single rep, function to generate animation keyframes, and generated keyframes
     const repDuration = exercise.stages.reduce((ttl, stage) => ttl + stage.duration, 0);
     const animationGenertator = animationGenertators[exercise.stages.length] || animationGenertators[1];
-    const animationKeyframes = keyframes([], animationGenertator(exercise.stages, repDuration).split('\n'));
+    const animationKeyframes = keyframes([], animationGenertator(exercise.stages, repDuration, exercise.title).split('\n'));
 
     return (
         <React.Fragment>
